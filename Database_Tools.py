@@ -68,7 +68,7 @@ def get_lowest_spin(db, fs, match_criteria, update={}):
 
         count = 0
         for match in matches:
-            nup = match['incar']['NUPDOWN']
+            nup_test = match['incar']['NUPDOWN']
             if nup_test == nup:
                 count += 1
             if 'NUPDOWN' not in match:
