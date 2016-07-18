@@ -28,7 +28,10 @@ sxdefectalign_output = {                    # definitions to scrape information 
     'Calculation':(-1, 'epsilon')
 }
 
-scrap_dir = '/home/ryan/scratch/'
+for path in ['/home/ryan/scratch/', '/export/home/mongodb/scratch']:
+    if os.path.exists(path):
+        scrap_dir = '/home/ryan/scratch/'
+        break
 
 def scrap():
     return os.path.join(scrap_dir, 'temp.' + str(uuid.uuid4()))
