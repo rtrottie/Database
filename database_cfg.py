@@ -30,7 +30,7 @@ sxdefectalign_output = {                    # definitions to scrape information 
 
 for path in ['/home/ryan/scratch/', '/export/home/mongodb/scratch']:
     if os.path.exists(path):
-        scrap_dir = '/home/ryan/scratch/'
+        scrap_dir = path
         break
 
 def scrap():
