@@ -113,7 +113,8 @@ def analyze_DATABASE_file(database_files=[], labels=[], tags={}):
     return (tags, files)
 
 def load_db(database_name='ryan'):
-    client = pymongo.MongoClient(os.environ['MONGO_IP'], int(os.environ['MONGO_PORT']))
+    client_ip = '10.0.2.2:27018'
+    client = pymongo.MongoClient(client_ip)
     db = client[database_name]
     fs = gridfs.GridFS(db)
     return (db, fs, client)
@@ -170,7 +171,6 @@ def add_charged_defect(collection, material, directory, other_info, other_files=
         # print('Compressed')
         other_info['defect_charge'] = charge
         add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))])
-
 
 def add_nupdown_convergence(collection, material, directory, other_info={}, other_files=[]):
     dirs = []

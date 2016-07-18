@@ -11,7 +11,7 @@ import time
 import signal
 from Classes_Pymatgen import *
 
-client_ip = '10.0.2.2'
+client_ip = '10.0.2.2:27018'
 
 try: input = raw_input
 except NameError: pass
