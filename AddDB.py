@@ -197,7 +197,7 @@ def add_nupdown_convergence(collection, material, directory, other_info={}, othe
                      os.path.join(dir, 'POTCAR'), os.path.join(dir, 'CONTCAR'), os.path.join(dir, 'OUTCAR'), os.path.join(dir, 'vasprun.xml'),
                      other_info=other_info, other_files=other_files)
 
-def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, vasprun, other_info={}, other_files=[], force=False):
+def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
     (db, fs, client) = load_db()
     collection = db[collection]
     p = Poscar.from_file(contcar)
@@ -215,6 +215,13 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, 
     info['kpoints'] = Kpoints.from_file(kpoints).as_dict()
     info.update(get_vasprun_info(vasprun))
     info.update(other_info)
+    if not info['converged'] and check_convergence:
+        continueP = input('Run is not Converged.  Add Anyway? (y/n)\n --> ')
+        if continueP == 'y' or continueP == 'yes':
+            pass
+        else:
+            print('Did not Select y/yes to add')
+
 
     if entry_exists(collection, info) and not force:
         print 'Identical Entry Exists'
