@@ -45,7 +45,7 @@ for (atom, location) in [('sc', 'subsurface'), ('ti', 'nearest'), ('ti', 'subsur
         'POTIM'     : 0,
         'NSW'       : 0,
         'NPAR'      : 2,
-        'AUTO_NUPDOWN': ' '.join([str(start['incar']['NUPDOWN']), str(final['incar']['NUPDOWN'])]),
+        'AUTO_NUPDOWN': ['nup', str(start['incar']['NUPDOWN']), str(final['incar']['NUPDOWN'])],
         'AUTO_NUPDOWN_ITERS' : 10
     }
 
