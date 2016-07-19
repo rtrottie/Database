@@ -221,6 +221,8 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, 
             pass
         else:
             print('Did not Select y/yes to add')
+            client.close()
+            return
 
 
     if entry_exists(collection, info) and not force:

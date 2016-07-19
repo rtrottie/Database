@@ -8,28 +8,27 @@ from Classes_Pymatgen import *
 from pymatgen.core import *
 import ase.io
 from ase import Atoms
+import database_cfg
 
 SCRATCH = '/home/ryan/scratch/scratch.cif'
 os.environ['VESTA_DIR'] = '/home/ryan/programs/VESTA-x86_64'
 
-def view_multiple(runs, fs):
+def view_multiple(runs):
     structs = []
-    for i in range(len(runs)):
-        if runs[i]:
-            with fs.get(ObjectId(runs[i]["contcar"])) as f:
-                structs.append(ase.io.read(f, format='vasp'))
-        else:
-            structs.append(Atoms())
-    ase.io.write(SCRATCH, structs)
-    return subprocess.Popen(['jmol', SCRATCH], stdout=subprocess.PIPE)
+    for run in runs:
+        p = Poscar.from_dict(run['poscar'])
+        filename = database_cfg.scrap()
+        p.write_file(filename)
+        with open(filename) as f:
+            structs.append(ase.io.read(f, format='vasp'))
+        os.remove(filename)
+    filename = database_cfg.scrap() + '.cif'
+    ase.io.write(filename, structs)
+    return subprocess.Popen(['jmol', filename], stdout=subprocess.PIPE)
 
-def view(run, fs):
-    with fs.get(ObjectId(run["contcar"])) as f:
-        s = ''
-        for chunk in f.readchunk():
-            s += chunk
-        p = Poscar.from_string(s)
-        p = Vis.open_in_Jmol(p.structure)
+def view(run):
+    p = Poscar.from_dict(run['poscar'])
+    p = Vis.open_in_Jmol(p.structure)
     return p
 
 if __name__ == '__main__':

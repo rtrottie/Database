@@ -45,12 +45,12 @@ def parse_sxdefectalign(lines):
 try: input = raw_input
 except NameError: pass
 base_match = {
-    'material' : 'znse',
+    'material' : 'gaas',
     'defect' : {'$exists' : False},
     'converged' : True
 }
 match_criteria = {
-    'material' : 'znse',
+    'material' : 'gaas',
     'converged': True,
     'defect' : {'$exists' : True},
     'alignment.vline' : {'$exists' : False},
@@ -63,34 +63,34 @@ base_locpot = Database_Tools.get_file(fs, base['locpot'], fix_as='LOCPOT', fix_a
 
 os.chdir(database_cfg.scrap_dir)
 
-# runs = db.database.find(match_criteria)
-# for run in runs:
-#     print(str(run['defect']) + ' ' + str(run['defect_charge']))
-#     locpot = Database_Tools.get_file(fs, run['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(run['poscar']))
-#     avg = np.array(0)
-#     for i in range(3):
-#         print('  ' + str(i))
-#         command = ['sxdefectalign', '--vasp',
-#                    '--average', '1',
-#                    '-a' + str(i+1),
-#                    '--vref', base_locpot,
-#                    '--vdef', locpot,
-#                    '--ecut', str(run['incar']['ENCUT']*0.073498618),
-#                    '--center', ','.join(run['defect_center']), '--relative',
-#                    '--eps', str(base['dielectric_constant']),
-#                    '-q', str(-run['defect_charge'])]
-#         process = subprocess.Popen(command, stdout=subprocess.PIPE)
-#         process.wait()
-#         alignment = parse_sxdefectalign(process.stdout.readlines())
-#         vline = parse_vline('vline-eV.dat')
-#         plt.plot(vline['z'], vline['V']['short_range'], label=str(i))
-#         avg = avg + vline['V']['short_range']
-#     avg = avg/3
-#     alignment['vline'] = list(avg)
-#     alignment['vline_axis'] = vline['z']
-#     db.database.update_one({'_id' : run['_id']},
-#                            {'$set': {'alignment' : alignment}})
-#     os.remove(locpot)
+runs = db.database.find(match_criteria)
+for run in runs:
+    print(str(run['defect']) + ' ' + str(run['defect_charge']))
+    locpot = Database_Tools.get_file(fs, run['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(run['poscar']))
+    avg = np.array(0)
+    for i in range(3):
+        print('  ' + str(i))
+        command = ['sxdefectalign', '--vasp',
+                   '--average', '1',
+                   '-a' + str(i+1),
+                   '--vref', base_locpot,
+                   '--vdef', locpot,
+                   '--ecut', str(run['incar']['ENCUT']*0.073498618),
+                   '--center', ','.join(run['defect_center']), '--relative',
+                   '--eps', str(base['dielectric_constant']),
+                   '-q', str(-run['defect_charge'])]
+        process = subprocess.Popen(command, stdout=subprocess.PIPE)
+        process.wait()
+        alignment = parse_sxdefectalign(process.stdout.readlines())
+        vline = parse_vline('vline-eV.dat')
+        # plt.plot(vline['z'], vline['V']['short_range'], label=str(i))
+        avg = avg + vline['V']['short_range']
+    avg = avg/3
+    alignment['vline'] = list(avg)
+    alignment['vline_axis'] = vline['z']
+    db.database.update_one({'_id' : run['_id']},
+                           {'$set': {'alignment' : alignment}})
+    os.remove(locpot)
 
 match_criteria['alignment.vline']  = {'$exists' : True}
 match_criteria['alignment.align'] = {'$exists' : False}
