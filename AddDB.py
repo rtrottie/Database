@@ -36,7 +36,7 @@ def delete(database, fs, id):
             if f == 'kpoints':
                 pass
             else:
-                raise Exception('Failed to Delete ' + f)
+                print('Failed to Delete ' + f)
     if 'min1' in run:
         delete(database, fs, run['min1'])
     if 'min2' in run:

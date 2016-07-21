@@ -45,12 +45,12 @@ def parse_sxdefectalign(lines):
 try: input = raw_input
 except NameError: pass
 base_match = {
-    'material' : 'gaas',
+    'material' : 'znse',
     'defect' : {'$exists' : False},
     'converged' : True
 }
 match_criteria = {
-    'material' : 'gaas',
+    'material' : 'znse',
     'converged': True,
     'defect' : {'$exists' : True},
     'alignment.vline' : {'$exists' : False},

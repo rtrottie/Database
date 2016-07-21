@@ -12,17 +12,31 @@ client_ip = '10.0.2.2:27018'
 try: input = raw_input
 except NameError: pass
 
-atom = 'sc'
-location = 'nearest'
-for (atom, location) in [('sc', 'subsurface'), ('ti', 'nearest'), ('ti', 'subsurface'), ('v', 'nearest'),
-                         ('v', 'subsurface'), ('mn', 'nearest'), ('cu', 'nearest'), ('zn', 'active'), ('zn', 'nearest')]:
-    match_criteria = {
-        'material' : 'hercynite',
-        'kpoints_str' : 'gamma'
-    }
+atoms = ['sc', 'ti', 'v', 'cr', 'mn', 'fe', 'co', 'ni', 'cu', 'zn']
+locations = ['active', 'nearest', 'subsurface']
+# for (atom, location) in [('sc', 'subsurface'), ('ti', 'nearest'), ('ti', 'subsurface'), ('v', 'nearest'),
+#                          ('v', 'subsurface'), ('mn', 'nearest'), ('cu', 'nearest'), ('zn', 'active'), ('zn', 'nearest')]:
+#     pass
+for atom in atoms:
+  for location in locations:
+    print atom + ' ' + location
+    if atom == 'fe':
+        match_criteria = {
+            'material': 'hercynite',
+            'kpoints_str': 'gamma',
+            'dopant_atoms': {'$exists' : False},
+            'dopant_location': {'$exists' : False},
+        }
+    else:
+        match_criteria = {
+            'material' : 'hercynite',
+            'kpoints_str' : 'gamma',
+            'dopant_atoms' : atom,
+            'dopant_location': location,
+        }
     start_match = {
         'adsorption_description' : {
-            '$all' : ['water', 'adsorbed']
+            '$all' : ['water', 'full']
         }
     }
     final_match = {
@@ -41,14 +55,19 @@ for (atom, location) in [('sc', 'subsurface'), ('ti', 'nearest'), ('ti', 'subsur
     final = get_lowest_spin(db, fs, match_criteria, final_match)
 
     to_update = {
-        'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'gsm']),
+        'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'ful-dis','gsm']),
         'POTIM'     : 0,
         'NSW'       : 0,
-        'NPAR'      : 2,
-        'AUTO_NUPDOWN': ['nup', str(start['incar']['NUPDOWN']), str(final['incar']['NUPDOWN'])],
-        'AUTO_NUPDOWN_ITERS' : 10
+        'NELM'      : 100,
+        'NPAR'      : 4,
+        'AUTO_NODES': 2,
     }
 
+    if start['incar']['NUPDOWN'] != final['incar']['NUPDOWN']:
+        to_update['AUTO_NUPDOWN'] = ['nup', str(start['incar']['NUPDOWN']), str(final['incar']['NUPDOWN'])]
+        to_update['AUTO_NUPDOWN_ITERS'] = 10
+    else:
+        to_update['NUPDOWN'] = start['incar']['NUPDOWN']
 
     incar = Incar.from_dict(start['incar'])
     potcar = Potcar(start['potcar'])
