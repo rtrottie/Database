@@ -13,7 +13,7 @@ try: input = raw_input
 except NameError: pass
 
 atoms = ['sc', 'ti', 'v', 'cr', 'mn', 'fe', 'co', 'ni', 'cu', 'zn']
-locations = ['active', 'nearest', 'subsurface']
+locations = ['active']
 # for (atom, location) in [('sc', 'subsurface'), ('ti', 'nearest'), ('ti', 'subsurface'), ('v', 'nearest'),
 #                          ('v', 'subsurface'), ('mn', 'nearest'), ('cu', 'nearest'), ('zn', 'active'), ('zn', 'nearest')]:
 #     pass
@@ -23,25 +23,23 @@ for atom in atoms:
     if atom == 'fe':
         match_criteria = {
             'material': 'hercynite',
-            'kpoints_str': 'gamma',
             'dopant_atoms': {'$exists' : False},
             'dopant_location': {'$exists' : False},
         }
     else:
         match_criteria = {
             'material' : 'hercynite',
-            'kpoints_str' : 'gamma',
             'dopant_atoms' : atom,
             'dopant_location': location,
         }
     start_match = {
         'adsorption_description' : {
-            '$all' : ['water', 'full']
+            '$all' : ['hydroxide', 'single']
         }
     }
     final_match = {
         'adsorption_description' : {
-            '$all' : ['hydride', 'dissociated']
+            '$all' : ['hydride', 'single']
         }
     }
     to_remove = ['IOPT', 'REQUIRE', 'STAGE_NAME', 'STAGE_NUMBER', 'NUPDOWN']
@@ -55,7 +53,7 @@ for atom in atoms:
     final = get_lowest_spin(db, fs, match_criteria, final_match)
 
     to_update = {
-        'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'ful-dis','gsm']),
+        'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'h-hop','gsm']),
         'POTIM'     : 0,
         'NSW'       : 0,
         'NELM'      : 100,

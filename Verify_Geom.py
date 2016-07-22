@@ -9,6 +9,7 @@ import Vis
 import subprocess
 from bson import ObjectId
 import time
+from AddDB import load_db
 import signal
 from Classes_Pymatgen import *
 
@@ -20,33 +21,30 @@ except NameError: pass
 match_criteria = {
     'dopant_atoms': 'cu',
     'dopant_location': 'subsurface',
-    'verified_geometry' : {'$exists' : False},
-    'converged' : True,
-    'material': 'hercynite',
-    'adsorption_description': {'$exists': False},
+    # 'verified_geometry' : {'$exists' : False},
+    'adsorption_description': 'hydride',
     'dimer_min': {'$exists': False},
 }
 
 
-client = pymongo.MongoClient(client_ip)
-db = client.ryan
-fs = gridfs.GridFS(db)
+db, fs, client = load_db()
 runs = list(db.database.find(match_criteria).sort([("energy", pymongo.ASCENDING)]))
-print(len(runs))
-for run in runs:
-    print run
-    p = View_Structures.view(run)
-    time.sleep(1.5)
-    label = input('Verify this state (y/n) (1/0) or "delete" : \n --> ')
-
-    if label == 'delete' or label == 'd':
-        AddDB.delete(db.database, fs, run['_id'])
-        print('DELETED')
-    elif label == 'y' or label == '1':
-        db.database.update_one({'_id' : run['_id']},
-                               {'$set': {'verified_geometry' : True}})
-    else:
-        db.database.update_one({'_id' : run['_id']},
-                               {'$set': {'adsorption_description' : label.split()}})
+View_Structures.view_multiple(runs)
+# print(len(runs))
+# for run in runs:
+#     print run
+#     p = View_Structures.view(run)
+#     time.sleep(1.5)
+#     label = input('Verify this state (y/n) (1/0) or "delete" : \n --> ')
+#
+#     if label == 'delete' or label == 'd':
+#         AddDB.delete(db.database, fs, run['_id'])
+#         print('DELETED')
+#     elif label == 'y' or label == '1':
+#         db.database.update_one({'_id' : run['_id']},
+#                                {'$set': {'verified_geometry' : True}})
+#     else:
+#         db.database.update_one({'_id' : run['_id']},
+#                                {'$set': {'adsorption_description' : label.split()}})
 
 client.close()
