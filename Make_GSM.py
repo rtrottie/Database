@@ -34,14 +34,15 @@ for atom in atoms:
         }
     start_match = {
         'adsorption_description' : {
-            '$all' : ['water', 'full']
+            '$all' : ['water', 'adsorbed']
         },
         'ts_label' : {'$exists' : False}
     }
     final_match = {
         'adsorption_description' : {
-            '$all' : ['hydride', 'dissociated']
-        }
+            '$all' : ['water', 'full']
+        },
+        'ts_label' : {'$exists' : False}
     }
     to_remove = ['IOPT', 'REQUIRE', 'STAGE_NAME', 'STAGE_NUMBER', 'NUPDOWN']
 
@@ -59,6 +60,9 @@ for atom in atoms:
         'NSW'       : 0,
         'NELM'      : 100,
         'NPAR'      : 4,
+        'ISTART'    : 1,
+        'ICHARG'    : 1,
+
     }
 
     if start['incar']['NUPDOWN'] != final['incar']['NUPDOWN']:
