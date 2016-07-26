@@ -9,6 +9,7 @@ from pymatgen.core import *
 import ase.io
 from ase import Atoms
 import database_cfg
+from AddDB import load_db
 
 SCRATCH = '/home/ryan/scratch/scratch.cif'
 os.environ['VESTA_DIR'] = '/home/ryan/programs/VESTA-x86_64'
@@ -33,26 +34,19 @@ def view(run):
 
 if __name__ == '__main__':
     match_criteria = {
-        'material' : 'hercynite',
-        'dopant_location' : 'active',
-        'adsorption_description' : {'$exists' : False},
-        'labels' : {'$nin' : ['dos', 'nupdown']}
+        'material'  : 'gaas',
+        'defect'    : 'as-ga'
 
     }
     sort_criteria = [
         ("energy", pymongo.ASCENDING)
     ]
 
-    client_ip = '10.0.2.2'
-
-    client = pymongo.MongoClient(client_ip)
-    db = client.ryan
-    fs = gridfs.GridFS(db)
-    client.close()
+    db, fs, client = load_db()
 
     runs = list(db.database.find(match_criteria).sort(sort_criteria))[0:10]
-    runs = sorted(runs, cmp=lambda x,y : Element(x['elements'][2]).number - Element(y['elements'][2]).number)
+    # runs = sorted(runs, cmp=lambda x,y : Element(x['elements'][2]).number - Element(y['elements'][2]).number)
 
+    print(runs[0].potcar)
     print(len(runs))
-    view_multiple(runs, fs)
-    print runs[11]
+    view_multiple(runs)

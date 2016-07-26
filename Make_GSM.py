@@ -34,12 +34,13 @@ for atom in atoms:
         }
     start_match = {
         'adsorption_description' : {
-            '$all' : ['hydroxide', 'single']
-        }
+            '$all' : ['water', 'full']
+        },
+        'ts_label' : {'$exists' : False}
     }
     final_match = {
         'adsorption_description' : {
-            '$all' : ['hydride', 'single']
+            '$all' : ['hydride', 'dissociated']
         }
     }
     to_remove = ['IOPT', 'REQUIRE', 'STAGE_NAME', 'STAGE_NUMBER', 'NUPDOWN']
@@ -53,12 +54,11 @@ for atom in atoms:
     final = get_lowest_spin(db, fs, match_criteria, final_match)
 
     to_update = {
-        'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'h-hop','gsm']),
+        'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'ful-ads','gsm']),
         'POTIM'     : 0,
         'NSW'       : 0,
         'NELM'      : 100,
         'NPAR'      : 4,
-        'AUTO_NODES': 2,
     }
 
     if start['incar']['NUPDOWN'] != final['incar']['NUPDOWN']:
