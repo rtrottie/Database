@@ -179,7 +179,7 @@ def add_nupdown_convergence(collection, material, directory, other_info={}, othe
     if os.path.exists(os.path.join(directory, 'nupdown')):                                                              # Getting (nupdown dir, nupdown) in a list
         for dir in [dir for dir in os.listdir(os.path.join(directory, 'nupdown')) if os.path.isdir(os.path.join(directory, 'nupdown', dir))]:
             try:
-                dirs.append((os.path.join(directory, 'nupdown', dir), int(dir)))
+                dirs.append((os.path.join(directory, 'nupdown', dir), int(dir.replace('n', '-'))))
             except:
                 pass
     else:

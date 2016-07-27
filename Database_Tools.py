@@ -45,7 +45,7 @@ def get_one(db, match_criteria, update=None):
     else:
         return matches[0]
 
-def get_lowest_spin(db, fs, match_criteria, update={}):
+def get_lowest_spin(db, fs, match_criteria, updates={}):
     '''
 
     :param db: Collection
@@ -53,10 +53,13 @@ def get_lowest_spin(db, fs, match_criteria, update={}):
     :type update: dict
     :return:
     '''
-    if 'energy' not in update or 'energy' not in match_criteria:
-        update['energy'] = {'$exists' : True}
-    match_criteria = match_criteria.copy()
-    match_criteria.update(update)
+    if type(updates) == type({}):
+        updates = [updates]
+    for update in updates:
+        if 'energy' not in update or 'energy' not in match_criteria:
+            update['energy'] = {'$exists' : True}
+        match_criteria = match_criteria.copy()
+        match_criteria.update(update)
     matches = list(db.database.find(match_criteria).sort([("energy", pymongo.ASCENDING)]))
 
     if len(matches) == 1:
