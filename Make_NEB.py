@@ -17,7 +17,8 @@ match_criteria = {
     'converged': True,
     'defect_type': 'v-o',
     'material': 'hercynite',
-    'ts_label': {'$exists': False}
+    'ts_label': {'$exists': False},
+    'incar.NUPDOWN' : {'$gte' : 0}
 }
 
 start_match = {
