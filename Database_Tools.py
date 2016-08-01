@@ -45,7 +45,7 @@ def get_one(db, match_criteria, update=None):
     else:
         return matches[0]
 
-def get_lowest_spin(db, fs, match_criteria, updates={}):
+def get_lowest_spin(db, match_criteria, updates={}):
     '''
 
     :param db: Collection
