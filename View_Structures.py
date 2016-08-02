@@ -3,6 +3,7 @@ import pymongo
 import gridfs
 import Vis
 import subprocess
+from Database_Tools import get_lowest_spin
 from bson import ObjectId
 from Classes_Pymatgen import *
 from pymatgen.core import *
@@ -34,19 +35,25 @@ def view(run):
 
 if __name__ == '__main__':
     match_criteria = {
-        'material'  : 'gaas',
-        'defect'    : 'as-ga'
+    'material' : 'hercynite',
+    'labels' : {
+        '$nin' : ['dos', 'nupdown', 'ts'],
+        '$in'  : ['relaxation']},
+    'dimer_min' : {'$exists' : False},
+        'dopant_atoms' : 'co',
+        'dopant_location' : 'active',
+        'adsorption_description' : {'$in' : ['full']}
+}
 
-    }
     sort_criteria = [
         ("energy", pymongo.ASCENDING)
     ]
 
     db, fs, client = load_db()
 
-    runs = list(db.database.find(match_criteria).sort(sort_criteria))[0:10]
+    # runs = list(db.database.find(match_criteria).sort(sort_criteria))[0:10]
+    runs = [get_lowest_spin(db, match_criteria, )]
     # runs = sorted(runs, cmp=lambda x,y : Element(x['elements'][2]).number - Element(y['elements'][2]).number)
 
-    print(runs[0].potcar)
     print(len(runs))
     view_multiple(runs)
