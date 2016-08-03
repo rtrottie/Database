@@ -53,8 +53,8 @@ match_criteria = {
     'material' : 'znse',
     'locpot' : {'$exists' : True},
     'defect' : {'$nin' : [],
-                '$exists' : True}
-    # 'alignment.vline' : {'$exists' : False},
+                '$exists' : True},
+    'alignment.vline' : {'$exists' : False},
 }
 
 db, fs, client = AddDB.load_db()
@@ -142,7 +142,7 @@ match_criteria['alignment.vline']  = {'$exists' : True}
 match_criteria['alignment.align'] = {'$exists' : True}
 match_criteria['alignment.valign'] = 0
 
-runs = db.database.find(match_criteria)
+runs = db.database.find(match_criteria).sort('defect', pymongo.ASCENDING)
 for run in runs:
     print(str(run['defect']) + ' ' + str(run['defect_charge']))
     locpot = Database_Tools.get_file(fs, run['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(run['poscar']))

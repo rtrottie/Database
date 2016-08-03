@@ -35,14 +35,8 @@ def view(run):
 
 if __name__ == '__main__':
     match_criteria = {
-    'material' : 'hercynite',
-    'labels' : {
-        '$nin' : ['dos', 'nupdown', 'ts'],
-        '$in'  : ['relaxation']},
-    'dimer_min' : {'$exists' : False},
-        'dopant_atoms' : 'co',
-        'dopant_location' : 'active',
-        'adsorption_description' : {'$in' : ['full']}
+    'material' : 'gaas',
+    'defect' : 'as-ga',
 }
 
     sort_criteria = [
@@ -51,8 +45,8 @@ if __name__ == '__main__':
 
     db, fs, client = load_db()
 
-    # runs = list(db.database.find(match_criteria).sort(sort_criteria))[0:10]
-    runs = [get_lowest_spin(db, match_criteria, )]
+    runs = list(db.database.find(match_criteria).sort(sort_criteria))[0:10]
+    #runs = [get_lowest_spin(db, match_criteria, )]
     # runs = sorted(runs, cmp=lambda x,y : Element(x['elements'][2]).number - Element(y['elements'][2]).number)
 
     print(len(runs))
