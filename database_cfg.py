@@ -20,7 +20,7 @@ database_spec = {'ts'           : {'ts_type' : None, 'job_type' : 'ts', 'files' 
 
 sxdefectalign_output = {                    # definitions to scrape information from sxdefectalign output
     'vAlign'    : (-2, 'valign'),           # first word is output keyword, tuple has format:
-    'eAlign'    : (-1, 'ealign'),           #       (index of number, desired name for number)
+    'eAlign'    : (-2, 'ealign'),           #       (index of number, desired name for number)
     'Isolated'  : (-1, 'energy_isolated'),
     'Periodic'  : (-1, 'energy_periodic'),
     'Difference': (-1, 'difference'),
