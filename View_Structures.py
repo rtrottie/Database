@@ -7,6 +7,7 @@ from Database_Tools import get_lowest_spin
 from bson import ObjectId
 from Classes_Pymatgen import *
 from pymatgen.core import *
+from pymatgen.io.vasp.sets import *
 import ase.io
 from ase import Atoms
 import database_cfg
