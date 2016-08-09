@@ -21,6 +21,7 @@ match_criteria = {
     'incar.NUPDOWN' : {'$gte' : 0}
 }
 
+atoms = ['sc', 'ti', 'v', 'cr', 'mn', 'co', 'ni', 'cu', 'zn']
 for atom in atoms:
     print atom
     if atom == 'fe':
