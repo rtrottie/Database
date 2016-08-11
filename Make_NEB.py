@@ -16,6 +16,7 @@ except NameError: pass
 match_criteria = {
     'converged': True,
     'defect_type': 'v-o',
+    'kpoints.kpoints' : [[2,2,2]],
     'material': 'hercynite',
     'ts_label': {'$exists': False},
     'incar.NUPDOWN' : {'$gte' : 0}
@@ -109,10 +110,10 @@ for atom in atoms:
 
             Poscar(images[i]).write_file(os.path.join(folder, 'POSCAR'))
         os.chdir(run_folder)
-        # sub = subprocess.Popen(['/home/ryan/bin/nebavoid.pl', '1.35'])
-        # sub.wait()
-        # sub = subprocess.Popen(['/home/ryan/bin/nebmovie.pl'])
-        # sub.wait()
+        sub = subprocess.Popen(['/home/ryan/bin/nebavoid.pl', '1.35'])
+        sub.wait()
+        sub = subprocess.Popen(['/home/ryan/bin/nebmovie.pl'])
+        sub.wait()
         os.chdir(cwd)
 
 
