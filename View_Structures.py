@@ -36,8 +36,15 @@ def view(run):
 
 if __name__ == '__main__':
     match_criteria = {
-    'material' : 'gaas',
-    'defect' : 'as-ga',
+    'job_type' : 'ts',
+            'ts_label' : {'$all' : ['hydride', 'dissociation'],
+                          '$nin' : ['full']
+            },
+
+    'converged': True,
+    'material': 'hercynite',
+        'dopant_atoms' : 'co',
+        'dopant_location' : 'active'
 }
 
     sort_criteria = [

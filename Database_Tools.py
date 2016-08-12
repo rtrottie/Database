@@ -67,15 +67,18 @@ def get_lowest_spin(db, match_criteria, updates={}):
     elif len(matches) == 0:
         return None
     else:
-        nup = matches[0]['incar']['NUPDOWN']
-
+        try:
+            nup = matches[0]['incar']['NUPDOWN']
+        except:
+            nup = {'$exists' : False}
         count = 0
         for match in matches:
-            nup_test = match['incar']['NUPDOWN']
+            try:
+                nup_test = match['incar']['NUPDOWN']
+            except:
+                nup_test = {'$exists' : False}
             if nup_test == nup:
                 count += 1
-            if 'NUPDOWN' not in match:
-                db.database.update_one({'_id' : match['_id']}, {'$set' : {'NUPDOWN' : nup_test}})
         if count > 1:
             display = match_criteria.copy()
             display.update({'NUPDOWN': nup})
