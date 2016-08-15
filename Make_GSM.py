@@ -51,8 +51,8 @@ for atom in atoms:
     fs = gridfs.GridFS(db)
     runs = db.database.find(match_criteria)
 
-    start = get_lowest_spin(db, fs, match_criteria, start_match)
-    final = get_lowest_spin(db, fs, match_criteria, final_match)
+    start = get_lowest_spin(db, match_criteria, start_match)
+    final = get_lowest_spin(db, match_criteria, final_match)
 
     to_update = {
         'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'ful-ads','gsm']),
