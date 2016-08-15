@@ -8,6 +8,7 @@ import gridfs
 import database_cfg
 from bson import ObjectId
 import fnmatch
+import os
 import sys
 import bz2
 import Database_Tools
