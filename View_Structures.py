@@ -36,16 +36,16 @@ def view(run):
 
 if __name__ == '__main__':
     match_criteria = {
-    'job_type' : 'ts',
-            'ts_label' : {'$all' : ['hydride', 'dissociation'],
-                          '$nin' : ['full']
-            },
-
-    'converged': True,
-    'material': 'hercynite',
+        'job_type': 'relaxation',
+        'converged': True,
+        'material': 'hercynite',
         'dopant_atoms' : 'co',
-        'dopant_location' : 'active'
-}
+        'labels' : {'$nin' : ['ts', 'surface', 'adsorption']},
+        'defect_location' : {'$exists' : False},
+        'kpoints.kpoints' : [[2,2,2]]
+
+
+    }
 
     sort_criteria = [
         ("energy", pymongo.ASCENDING)
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     db, fs, client = load_db()
 
-    runs = list(db.database.find(match_criteria).sort(sort_criteria))[0:10]
+    runs = list(db.database.find(match_criteria).sort(sort_criteria))
     #runs = [get_lowest_spin(db, match_criteria, )]
     # runs = sorted(runs, cmp=lambda x,y : Element(x['elements'][2]).number - Element(y['elements'][2]).number)
 

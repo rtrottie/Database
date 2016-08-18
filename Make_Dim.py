@@ -37,6 +37,7 @@ ts_match = {
             }
 }
 atoms = ['sc', 'ti', 'v', 'cr', 'mn', 'fe', 'co', 'ni', 'cu', 'zn']
+atoms = ['fe']
 locations = ['origin', '90']
 cwd = os.path.abspath('.')
 
