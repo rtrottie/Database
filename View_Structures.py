@@ -36,15 +36,12 @@ def view(run):
 
 if __name__ == '__main__':
     match_criteria = {
-        'job_type': 'relaxation',
-        'converged': True,
-        'material': 'hercynite',
-        'dopant_atoms' : 'co',
-        'labels' : {'$nin' : ['ts', 'surface', 'adsorption']},
-        'defect_location' : {'$exists' : False},
-        'kpoints.kpoints' : [[2,2,2]]
-
-
+        'material' : 'hercynite',
+        'adsorption_description' : {'$exists' : False},
+        'labels' : {'$all' : ['dos'],
+                   '$nin' : ['ts']},
+        'dimer_min' : {'$exists' : False},
+        'kpoints_str' : '2x2x1'
     }
 
     sort_criteria = [
