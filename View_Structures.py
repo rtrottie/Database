@@ -36,13 +36,16 @@ def view(run):
 
 if __name__ == '__main__':
     match_criteria = {
-        'material' : 'hercynite',
-        'adsorption_description' : {'$exists' : False},
-        'labels' : {'$all' : ['dos'],
-                   '$nin' : ['ts']},
+        'job_type': {'$in' : ['relaxation']},
+        'converged': True,
+        'material': 'hercynite',
+        'adsorption_description' : {'$all' : ['single', 'hydride']},
         'dimer_min' : {'$exists' : False},
-        'kpoints_str' : '2x2x1'
+
     }
+
+    match_criteria['dopant_atoms'] = 'mn'
+    match_criteria['dopant_location'] = 'active'
 
     sort_criteria = [
         ("energy", pymongo.ASCENDING)
@@ -55,4 +58,6 @@ if __name__ == '__main__':
     # runs = sorted(runs, cmp=lambda x,y : Element(x['elements'][2]).number - Element(y['elements'][2]).number)
 
     print(len(runs))
+    for run in runs:
+        print run['energy']
     view_multiple(runs)

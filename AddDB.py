@@ -173,7 +173,7 @@ def add_charged_defect(collection, material, directory, other_info, other_files=
         other_info['defect_charge'] = charge
         add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))])
 
-def add_nupdown_convergence(collection, material, directory, other_info={}, other_files=[]):
+def add_nupdown_convergence(collection, material, directory, other_info={}, other_files=[], check_convergence=True):
     dirs = []
     print('Adding NUPDOWN Convergence.  Assuming dir/nupdown/{{ nupdown_# }} convention (may provide any parent/child of this structure)')
 
@@ -196,7 +196,7 @@ def add_nupdown_convergence(collection, material, directory, other_info={}, othe
         other_info['NUPDOWN'] = nupdown
         add_vasp_run(collection, material, os.path.join(dir, 'INCAR'), os.path.join(dir, 'KPOINTS'),
                      os.path.join(dir, 'POTCAR'), os.path.join(dir, 'CONTCAR'), os.path.join(dir, 'OUTCAR'), os.path.join(dir, 'vasprun.xml'),
-                     other_info=other_info, other_files=other_files)
+                     other_info=other_info, other_files=other_files, check_convergence=check_convergence)
 
 def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
     (db, fs, client) = load_db()
@@ -311,6 +311,8 @@ if __name__ == '__main__':
                         action='store_true')
     parser.add_argument('--fn', '--force-nupdown', help='Force adding all NUPDOWN',
                         action='store_true')
+    parser.add_argument('--cc', '--check_convergence', help='Don"t check convergence',
+                        action='store_false')
     args = parser.parse_args()
 
     database_files = []
@@ -349,14 +351,14 @@ if __name__ == '__main__':
     elif os.path.exists('nupdown') and not args.fn:
         i = input('nupdown folder found.  Add folder or no? (y/n)\n  -->  ')
         if i.lower() == 'y':
-            add_nupdown_convergence('database', material, os.path.abspath('.'), tags)
+            add_nupdown_convergence('database', material, os.path.abspath('.'), tags, check_convergence=args.cc)
         elif i.lower() == 'n':
             poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
-            add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'OUTCAR', 'vasprun.xml', tags, other_files)
+            add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'OUTCAR', 'vasprun.xml', tags, other_files, check_convergence=args.cc)
         else:
             raise Exception('Must say either y or n')
     elif os.path.exists('nupdown') and args.fn:
         add_nupdown_convergence('database', material, os.path.abspath('.'), tags, other_files)
     else:
         poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
-        add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'OUTCAR', 'vasprun.xml', tags, other_files)
+        add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'OUTCAR', 'vasprun.xml', tags, other_files, check_convergence=args.cc)
