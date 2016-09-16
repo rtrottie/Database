@@ -13,6 +13,7 @@ try: input = raw_input
 except NameError: pass
 
 atoms = ['sc', 'ti', 'v', 'cr', 'mn', 'fe', 'co', 'ni', 'cu', 'zn']
+atoms = ['cr']
 locations = ['active']
 # for (atom, location) in [('sc', 'subsurface'), ('ti', 'nearest'), ('ti', 'subsurface'), ('v', 'nearest'),
 #                          ('v', 'subsurface'), ('mn', 'nearest'), ('cu', 'nearest'), ('zn', 'active'), ('zn', 'nearest')]:
@@ -40,7 +41,7 @@ for atom in atoms:
     }
     final_match = {
         'adsorption_description' : {
-            '$all' : ['water', 'full']
+            '$all' : ['hydride', 'full']
         },
         'ts_label' : {'$exists' : False}
     }
@@ -55,11 +56,11 @@ for atom in atoms:
     final = get_lowest_spin(db, match_criteria, final_match)
 
     to_update = {
-        'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'ful-ads','gsm']),
+        'SYSTEM'    : ' '.join(['Herc', atom.upper() + '-' + location[0], 'h-dis','gsm']),
         'POTIM'     : 0,
         'NSW'       : 0,
         'NELM'      : 100,
-        'NPAR'      : 4,
+        'NPAR'      : 3,
         'ISTART'    : 1,
         'ICHARG'    : 1,
 
