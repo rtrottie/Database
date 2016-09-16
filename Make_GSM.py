@@ -41,7 +41,7 @@ for atom in atoms:
     }
     final_match = {
         'adsorption_description' : {
-            '$all' : ['hydride', 'full']
+            '$all' : ['hydride']
         },
         'ts_label' : {'$exists' : False}
     }
