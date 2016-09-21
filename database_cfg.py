@@ -15,7 +15,8 @@ database_spec = {'ts'           : {'ts_type' : None, 'job_type' : 'ts', 'files' 
                  'adsorption'   : {'material_elements' : None, 'adsorbate_name' : None, 'adsorbate_atoms' : None, 'adsorption_description' : None},
                  'defect'       : {'defect_type' : None, 'defect_location' : None},
                  'charged_defect':{'defect_center' : None, 'defect_charge' : None, 'defect' : None},
-                 'surface'      : {'surface_cut' : None, 'surface_termination' : None}
+                 'surface'      : {'surface_cut' : None, 'surface_termination' : None},
+                 'mep'          : {'job_type': 'mep', 'files' : bader_files}
 }
 
 sxdefectalign_output = {                    # definitions to scrape information from sxdefectalign output

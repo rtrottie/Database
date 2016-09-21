@@ -173,6 +173,22 @@ def add_charged_defect(collection, material, directory, other_info, other_files=
         other_info['defect_charge'] = charge
         add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))])
 
+
+def add_MEP(collection, material, directory, other_info, other_files=[]):
+    print('Adding a Charged defect, must be in charged defect cell or directory with ... n3 n2 n1 0 1 2 3 ...')
+    if os.path.exists(os.path.join(directory, 'INCAR')):  # is run directory
+        dirs = [('', int(other_info['defect_charge'][0]))]
+    else:  # must go to children ... n3 n2 n1 0 1 2 3 ... to find runs
+        dirs = []
+        for dir in [name for name in os.listdir(directory) if os.path.isdir(name)]:  # for every directory
+            dirs.append((dir, int(dir))) # n is used in place of - for filesystem compatibility make sure it is a valid dir
+    for (dir, stage) in dirs:
+        print(dir)
+        other_info['MEP_Position'] = stage
+        other_info[] =
+        add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))])
+
+
 def add_nupdown_convergence(collection, material, directory, other_info={}, other_files=[], check_convergence=True):
     dirs = []
     print('Adding NUPDOWN Convergence.  Assuming dir/nupdown/{{ nupdown_# }} convention (may provide any parent/child of this structure)')
