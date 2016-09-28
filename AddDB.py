@@ -185,7 +185,7 @@ def add_MEP(collection, material, directory, other_info, other_files=[]):
     for (dir, stage) in dirs:
         print(dir)
         other_info['MEP_Position'] = stage
-        other_info[] =
+        other_info['MEP_other'] = '...'
         add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))])
 
 
@@ -243,7 +243,7 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, 
 
 
     if entry_exists(collection, info) and not force:
-        print 'Identical Entry Exists'
+        print('Identical Entry Exists')
         client.close()
         return False
     else:
@@ -263,7 +263,7 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, 
             else:
                 info[filename] = 'none'
         result = collection.insert_one(info)
-        print 'Added'
+        print('Added')
         client.close()
         return result
 
@@ -297,7 +297,7 @@ def add_gsm_run(collection, material, directory, other_info={}, other_files = []
     image_dir.sort()
     for dir in image_dir:
         image = add_dir(collection, material, dir, other_info={}, other_files=[], force=True)
-        print '{ "_id" : "' + str(image) + '" }'
+        print('{ "_id" : "' + str(image) + '" }')
         images.append(image)
         energies.append(collection.find_one({'_id' : image}))
     ts_i = energies.index(max(energies))
@@ -305,7 +305,7 @@ def add_gsm_run(collection, material, directory, other_info={}, other_files = []
 
 def add_dir(collection, material, directory, other_info={}, other_files=[], force=False):
     poscar = os.path.join(directory, 'CONTCAR') if os.path.exists(os.path.join(directory, 'CONTCAR')) and os.path.getsize(os.path.join(directory, 'CONTCAR')) > 0 else os.path.join(directory, 'POSCAR')
-    other_files = list(map(lambda (n, x): (n, os.path.join(directory, x)), other_files))
+    other_files = list(map(lambda n, x: (n, os.path.join(directory, x)), other_files))
     return add_vasp_run(collection, material, os.path.join(directory, 'INCAR'), os.path.join(directory, 'KPOINTS'),
                         os.path.join(directory, 'POTCAR'), os.path.join(directory, poscar), os.path.join(directory, 'OUTCAR'),
                         os.path.join(directory, 'vasprun.xml'), other_info=other_info, other_files=other_files, force=force)
