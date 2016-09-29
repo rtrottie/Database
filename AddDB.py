@@ -31,15 +31,16 @@ def delete(database, fs, id):
     if type(id) == type('str') or type(id) == type(u'str'):
         id = ObjectId(id)
     run = database.find_one({'_id' : id})
-    files = run['files']
-    for f in files:
-        try:
-            fs.delete(ObjectId(run[f]))
-        except:
-            if f == 'kpoints':
-                pass
-            else:
-                print('Failed to Delete ' + f)
+    if 'files' in run:
+        files = run['files']
+        for f in files:
+            try:
+                fs.delete(ObjectId(run[f]))
+            except:
+                if f == 'kpoints':
+                    pass
+                else:
+                    print('Failed to Delete ' + f)
     for key in single_keys:
         if key in run:
             delete(database, fs, run[key])
