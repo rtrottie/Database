@@ -31,6 +31,9 @@ def delete(database, fs, id):
     if type(id) == type('str') or type(id) == type(u'str'):
         id = ObjectId(id)
     run = database.find_one({'_id' : id})
+    if run == None:
+        print('Run {} could not be deleted'.format(str(id)))
+        return
     if 'files' in run:
         files = run['files']
         for f in files:
