@@ -193,6 +193,7 @@ def add_charged_defect(collection, material, directory, other_info, other_files=
 def add_MEP(collection, material, directory, other_info, other_files=[]):
     (db, fs, client) = load_db()
     document = {}
+    document['files'] = []
     print('Adding a Charged defect, must be in meps directory with mep1 mep2 mepc')
     main_dirs = [('mep1', 1), ('mep2', 2), ('mepc', 'c')]
     for main_dir, side in main_dirs:
@@ -203,6 +204,7 @@ def add_MEP(collection, material, directory, other_info, other_files=[]):
             v = Vasprun(vasprun_file)
             fileID = add_file(fs, vasprun_file, 'vasprun')
             document['vasprun_{}'.format(side)] = fileID
+            document['files'].append('vasprun_{}'.format(side))
         else:
             for i in range(2):
                 document['POSCAR_{}'.format(i)] = Poscar.from_file(os.path.join(main_dir, 'POSCAR.1')).as_dict()

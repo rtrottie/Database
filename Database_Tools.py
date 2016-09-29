@@ -95,7 +95,7 @@ def compress(filename):
     print('Compressed')
     return temp
 
-def get_file(fs, oid, fix_as=None, fix_args=None):
+def get_file(fs, oid, fix_as='', fix_args=None):
     '''
     Get the file specified by oid from the specified filesystem fs.  Performs maintenace as specified by the fix_as
     setting
