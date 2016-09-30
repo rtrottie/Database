@@ -38,14 +38,15 @@ if __name__ == '__main__':
     match_criteria = {
         'job_type': {'$in' : ['relaxation']},
         'converged': True,
+        'surface_cut' : {'$exists' : True},
         'material': 'hercynite',
-        'adsorption_description' : {'$all' : ['single', 'hydride']},
+        'adsorption_description' : {'$exists' : False},
         'dimer_min' : {'$exists' : False},
-
+        # 'elements': {"$nin": ['H', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Co', 'Ni', 'Cu', 'Zn']}
     }
 
-    match_criteria['dopant_atoms'] = 'mn'
-    match_criteria['dopant_location'] = 'active'
+    match_criteria['dopant_atoms'] = {'$exists' : False}
+    match_criteria['dopant_location'] = {'$exists' : False}
 
     sort_criteria = [
         ("energy", pymongo.ASCENDING)
