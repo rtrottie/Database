@@ -408,10 +408,10 @@ if __name__ == '__main__':
         raise Exception('charged_defect must be specified twice')
     elif args.nupdown != ('convergence_type' in tags and tags['convergence_type'][0] == 'nupdown'):
         raise Exception('must specify -n flag and correctly label DATABASE file')
-    elif os.path.exists('INCAR') and 'ICHAIN' in Incar.from_file('INCAR') and Incar.from_file('INCAR')['ICHAIN'] == 2:
-        if tags['ts_type'][0] != 'dimer':
-            raise Exception('Dimer run, dimer ts_type must be set and ICHAIN = 2 in INCAR')
-        add_dimer_run('database', material, os.path.abspath('.'), other_info=tags, other_files=other_files)
+    # elif os.path.exists('INCAR') and 'ICHAIN' in Incar.from_file('INCAR') and Incar.from_file('INCAR')['ICHAIN'] == 2:
+    #     if tags['ts_type'][0] != 'dimer':
+    #         raise Exception('Dimer run, dimer ts_type must be set and ICHAIN = 2 in INCAR')
+    #     add_dimer_run('database', material, os.path.abspath('.'), other_info=tags, other_files=other_files)
     elif os.path.exists('nupdown') and not args.fn:
         i = input('nupdown folder found.  Add folder or no? (y/n)\n  -->  ')
         if i.lower() == 'y':
