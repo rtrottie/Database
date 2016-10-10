@@ -11,7 +11,7 @@ def read_ACF(acf):
     for label in labels:
         ACF[label] = []
     i = -1
-    lines = acf.read().split('\n')
+    lines = acf.read().split(b'\n')
     for line in lines:
         i += 1
         if i > 1:
