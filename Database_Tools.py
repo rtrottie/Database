@@ -89,8 +89,8 @@ def compress(filename):
     temp = database_cfg.scrap()
     print('Compressing ' + filename + '...', end='')
     sys.stdout.flush()
-    with open(filename) as f:  # compress LOCPOT
-        with bz2.BZ2File(temp, 'w') as b:
+    with open(filename, 'rb') as f:  # compress LOCPOT
+        with bz2.BZ2File(temp, 'wb') as b:
             b.write(f.read())
     print('Compressed')
     return temp

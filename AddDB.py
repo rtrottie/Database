@@ -337,11 +337,9 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, 
     info['files'] = []
     for (filename, filepath) in files:
         if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-            print('Adding {} ... '.format(filename), end='')
             fileID = add_file(fs, filepath, filename)
             info[filename] = fileID
             info['files'].append(filename)
-            print('Success')
         else:
             info[filename] = 'none'
     result = collection.insert_one(info)
