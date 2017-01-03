@@ -131,7 +131,7 @@ def analyze_DATABASE_file(database_files=[], labels=[], tags={}):
     return (tags, files)
 
 def load_db(database_name='ryan'):
-    client_ip = '10.0.2.2:27018'
+    client_ip = '10.0.2.2:27017'
     client = pymongo.MongoClient(client_ip)
     db = client[database_name]
     fs = gridfs.GridFS(db)
@@ -337,9 +337,11 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, 
     info['files'] = []
     for (filename, filepath) in files:
         if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+            print('Adding {} ... '.format(filename), end='')
             fileID = add_file(fs, filepath, filename)
             info[filename] = fileID
             info['files'].append(filename)
+            print('Success')
         else:
             info[filename] = 'none'
     result = collection.insert_one(info)
