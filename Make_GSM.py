@@ -20,7 +20,7 @@ locations = ['active']
 #     pass
 for atom in atoms:
   for location in locations:
-    print atom + ' ' + location
+    print(atom + ' ' + location)
     if atom == 'fe':
         match_criteria = {
             'material': 'hercynite',

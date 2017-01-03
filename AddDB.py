@@ -9,6 +9,7 @@ import database_cfg
 from bson import ObjectId
 import fnmatch
 import os
+import copy
 import sys
 import bz2
 import Database_Tools
@@ -59,31 +60,40 @@ def add_file(fs, filepath, filename=''):
         with open(filepath, 'rb') as f:
             fileID = fs.put(f)
     else:
-        with open(Database_Tools.compress(filepath)) as f:
+        with open(Database_Tools.compress(filepath), 'rb') as f:
             fileID = fs.put(f)
     return fileID
 
 def entry_exists(database, info):
     """
+    Check if entry exists based on the contents of the documents.  Does not compare files, or subdoccument classes
+    i.e. Poscar, Kpoints, and Incar
     :type database: pymongo.collection.Collection
     :type info: dict
     :rtype: bool
     """
-    info = info.copy()
+    info = copy.deepcopy(info)
+    # Ensure ts_label is done correctly
     if 'jobtype' in info and info['jobtype'] == 'ts' and 'ts_label' not in info:
         info['ts_label'] = {'$exists' : False}
+
+    # files will always be different since they have differen fileID
+    # do not check that the files are identical
     if 'files' in info:
         for file in info['files']:
-            try:
-                del info[file]
-            except:
-                pass
+            info[file] = {'$exists' : True}
     if '_id' in info:
         id = info['_id']
         del info['_id']
     else:
         id = ''
 
+    # Remove POSCAR, INCAR, and KPOINTS which do not match correctly
+    for item in ['poscar', 'kpoints', 'incar']:
+        if item in info:
+            info[item] = {'$exists' : True}
+
+    print(info)
     r = list(database.find(info))
     if len(r) > 1:
         return True
