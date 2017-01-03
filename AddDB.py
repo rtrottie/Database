@@ -267,50 +267,85 @@ def add_nupdown_convergence(collection, material, directory, other_info={}, othe
                      other_info=other_info, other_files=other_files, check_convergence=check_convergence)
 
 def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
-    (db, fs, client) = load_db()
-    collection = db[collection]
-    p = Poscar.from_file(contcar)
-    pot = Potcar.from_file(potcar)
-    info = {
-        'material' : material,
-        'elements' : p.site_symbols,
-        'potcar'   : pot.symbols,
-        'potcar_functional' : pot.functional
-    }
+    '''
+    Adds a VASP run to the database.  All input/output files must be provided in the arguments.
+
+    :param collection: str
+        Name of Collection for Database
+    :param material: str
+        name of Material that will be added to database
+    :param incar: str
+        Location of INCAR file on disk
+    :param kpoints: str
+        Location of KPOINTS file on disk
+    :param potcar: str
+        Location of POTCAR file on disk
+    :param contcar: str
+        Location of CONTCAR (or POSCAR) file on disk
+    :param outcar: str
+        Location of OUTCAR file on disk
+    :param vasprun: str
+        Location of vasprun.xml file on disk
+    :param other_info: dict
+        Other identifying info that will be included in database documet
+    :param other_files: list
+        Other files that should be stored
+    :param force: bool
+        Add run even if duplicate enetry exists
+    :param check_convergence: bool
+        Check for convergence (Default True).  If convergence is not found and this is True, do not add run to DB
+    :return: pymongo.results.InsertOneResult
+    '''
+    # Convert input strings to pymatgen file types (where applicable)  sets up other files to be stored
+    poscar = Poscar.from_file(contcar)
+    potcar = Potcar.from_file(potcar)
+    incar = Incar.from_file(incar)
+    kpoints = Kpoints.from_file(kpoints)
     files = [('outcar', outcar), ('vasprun', vasprun)] + other_files
 
-    info['incar'] = Incar.from_file(incar)
-    info['poscar'] = p.as_dict()
-    info['kpoints'] = Kpoints.from_file(kpoints).as_dict()
+    # Creating document information
+    info = {
+        'material' : material,
+        'elements' : poscar.site_symbols,
+        'potcar'   : potcar.symbols,
+        'potcar_functional' : potcar.functional
+    }
+    info['incar'] = incar                   # Incar is already a dict
+    info['poscar'] = poscar.as_dict()
+    info['kpoints'] = kpoints.as_dict()
     info.update(get_vasprun_info(vasprun))
     info.update(other_info)
+
+    # Check for convergence
     if not info['converged'] and check_convergence:
         continueP = input('Run is not Converged.  Add Anyway? (y/n)\n --> ')
         if continueP == 'y' or continueP == 'yes':
             pass
         else:
             print('Did not Select y/yes to add')
-            client.close()
             return
 
-
+    # Open up DB connection and check if entry exists, close if entry does exist
+    (db, fs, client) = load_db()
+    collection = db[collection]
     if entry_exists(collection, info) and not force:
         print('Identical Entry Exists')
         client.close()
         return False
-    else:
-        info['files'] = []
-        for (filename, filepath) in files:
-            if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-                fileID = add_file(fs, filepath, filename)
-                info[filename] = fileID
-                info['files'].append(filename)
-            else:
-                info[filename] = 'none'
-        result = collection.insert_one(info)
-        print('Added')
-        client.close()
-        return result
+
+    # Prepare Files to be added to DB
+    info['files'] = []
+    for (filename, filepath) in files:
+        if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+            fileID = add_file(fs, filepath, filename)
+            info[filename] = fileID
+            info['files'].append(filename)
+        else:
+            info[filename] = 'none'
+    result = collection.insert_one(info)
+    print('Added')
+    client.close()
+    return result
 
 def add_dimer_run(collection, material, directory, other_info={}, other_files = [], force=False):
     print('Adding Dimer Run.  mins Folder must exist')
