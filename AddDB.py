@@ -11,6 +11,7 @@ import fnmatch
 import os
 import copy
 import subprocess
+import File_Management
 import sys
 import bz2
 import Database_Tools
@@ -224,17 +225,11 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
 
     # Setting up NEB files
     os.chdir(directory)
-    nebbarrier = subprocess.check_output('nebbarrier.pl ; cat neb.dat', shell=True)
-    nebef      = subprocess.check_output(['nebef.pl'])
-    nebefs     = subprocess.check_output(['nebefs.pl'])
-    titles = {
-        'nebbarrier' : ['Image', 'Distance', 'Energy', 'Spring Forces' , 'Image'],
-        'nebef' : ['Image', 'Force', 'Energy-Absolute', 'Energy-Relative'],
-        'nebefs' : [],
-    }
-    for (name, output) in [('nebbarrier', nebbarrier), ('nebef', nebef), ('nebefs', nebefs)]:
-        lines = [ line.split() for line in output.split(b'\n') ]
-        lines = titles[name] + lines
+    nebbarrier = File_Management.file_to_dict(subprocess.check_output('nebbarrier.pl ; cat neb.dat', shell=True),
+                                                ['Image', 'Distance', 'Energy', 'Spring Forces' , 'Image_Duplicate'] )
+    nebef      = File_Management.file_to_dict(subprocess.check_output(['nebef.pl']),
+                                              ['Image', 'Force', 'Energy-Absolute', 'Energy-Relative'] )
+    nebefs     = File_Management.file_to_dict(subprocess.check_output(['nebefs.pl']).replace(b'Rel Energy', b'Rel_Energy')) # Splits on whitespace, label must be one word
 
 
 
@@ -443,6 +438,7 @@ def add_dir(collection, material, directory, other_info={}, other_files=[], forc
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    # How to Tag Data
     parser.add_argument('-d', '--database_file', help='Location of File to specify other important database tags (PLACEHOLDER DOESNT WORK)')
     parser.add_argument('-p', '--parent_dirs', help='Number of Parent Dirs to look for DATABASE files.  Will use all found, favoring closer files. (Default: None)',
                         default=-1, type=int)
@@ -452,6 +448,8 @@ if __name__ == '__main__':
                         default=[], nargs='*')
     parser.add_argument('-m', '--material', help='Material names, usually provided with DATABASE Files (will overwrite these values if provided)',
                         nargs='*')
+
+    # Specifc runs that will be added
     parser.add_argument('-n', '--nupdown', help='Specifies this is a Nupdown run both this flag and label must be set',
                         action='store_true')
     parser.add_argument('-c', '--charged_defect', help='Specifies this is a Charged Defect run both this flag and label must be set',
@@ -462,8 +460,11 @@ if __name__ == '__main__':
                         action='store_true')
     parser.add_argument('--cc', '--check_convergence', help='Don"t check convergence',
                         action='store_false')
+    parser.add_argument('--neb', help='add NEB run',
+                        action='store_true')
     args = parser.parse_args()
 
+    # Find and Parse Database Files
     database_files = []
     if args.parent_dirs >= 0:
         for pdi in range(args.parent_dirs, -1, -1):

@@ -1,21 +1,27 @@
 
-def read_ACF(acf):
+def file_to_dict(acf, labels=None):
+    '''
+    Turn a file into a dictionary with labels corresponding to the keys.  if labels=None, use first line of the file
+    :param acf: str
+    :param labels: list
+    :return: dict
     '''
 
-    :type acf: file
-    :return:
-    '''
+    # Parse lines and setup labels if not provided
+    lines = acf.split(b'\n')
+    if not labels:
+        labels = lines[0].split()
+        lines = lines[1:]
 
-    labels = ['#', 'x', 'y', 'z', 'charge', 'min_dist', 'volume']
+    # create output dictionary and initialize
     ACF = {}
     for label in labels:
         ACF[label] = []
-    i = -1
-    lines = acf.read().split(b'\n')
+
+    # Add each line to output dictionary, if and only if number of data points = number of labels
     for line in lines:
-        i += 1
-        if i > 1:
-            data = line.split()
+        data = line.split()
+        if len(data) == len(labels):
             for j in range(len(data)):
                 ACF[labels[j]].append(data[j])
 
