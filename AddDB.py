@@ -10,6 +10,7 @@ from bson import ObjectId
 import fnmatch
 import os
 import copy
+import subprocess
 import sys
 import bz2
 import Database_Tools
@@ -199,6 +200,45 @@ def add_charged_defect(collection, material, directory, other_info, other_files=
         # print('Compressed')
         other_info['defect_charge'] = charge
         add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))])
+
+def add_NEB(collection, material, directory, other_info={}, other_files=[]):
+    '''
+
+    :param collection: str
+        Name of Collection for Database
+    :param material: str
+        name of Material that will be added to database
+    :param directory: str
+        NEB directory that will be added to Database
+    :param other_info:
+        other_info that can be included
+    :param other_files:
+        other_files that can be included, most files included here will be added from all image directories
+    :return: pymongo.results.InsertOneResult
+    '''
+
+    # preparing variables
+    incar = Incar.from_file(os.path.join(directory, 'INCAR'))
+    images = incar['IMAGES']
+    subdirs = [ str(i).zfill(2) for i in range(images+2) ]
+
+    # Setting up NEB files
+    os.chdir(directory)
+    nebbarrier = subprocess.check_output('nebbarrier.pl ; cat neb.dat', shell=True)
+    nebef      = subprocess.check_output(['nebef.pl'])
+    nebefs     = subprocess.check_output(['nebefs.pl'])
+    titles = {
+        'nebbarrier' : ['Image', 'Distance', 'Energy', 'Spring Forces' , 'Image'],
+        'nebef' : ['Image', 'Force', 'Energy-Absolute', 'Energy-Relative'],
+        'nebefs' : [],
+    }
+    for (name, output) in [('nebbarrier', nebbarrier), ('nebef', nebef), ('nebefs', nebefs)]:
+        lines = [ line.split() for line in output.split(b'\n') ]
+        lines = titles[name] + lines
+
+
+
+    return
 
 def add_MEP(collection, material, directory, other_info, other_files=[]):
     (db, fs, client) = load_db()
