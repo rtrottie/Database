@@ -4,5 +4,6 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../VASP-Templates" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../VTST-Tools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../VTST-Tools" vcs="Git" />
   </component>
 </project>

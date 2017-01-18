@@ -143,7 +143,7 @@ def analyze_DATABASE_file(database_files=[], labels=[], tags={}):
     return (tags, files)
 
 def load_db(database_name='ryan'):
-    client_ip = '10.0.2.2:27017'
+    client_ip = '127.0.0.1:27017'
     client = pymongo.MongoClient(client_ip)
     db = client[database_name]
     fs = gridfs.GridFS(db)
