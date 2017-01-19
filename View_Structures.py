@@ -27,7 +27,7 @@ def view_multiple(runs):
         os.remove(filename)
     filename = database_cfg.scrap() + '.cif'
     ase.io.write(filename, structs)
-    return subprocess.Popen(['jmol', filename], stdout=subprocess.PIPE)
+    return Vis.view(filename)
 
 def view(run):
     p = Poscar.from_dict(run['poscar'])
@@ -36,7 +36,14 @@ def view(run):
 
 if __name__ == '__main__':
     match_criteria = {
-    'material' : 'tio2',
+    'material' : 'hercynite',
+    'job_type' : 'relaxation',
+    'dopant_atoms' : {'$exists' : False},
+    'adsorption_description' : 'hydride',
+    'labels' : {'$all' : ['surface'],
+                '$nin': ['defect', 'doped']}
+
+
 
 
     }
@@ -50,11 +57,13 @@ if __name__ == '__main__':
 
     db, fs, client = load_db()
 
-    runs = list(db.database.find(match_criteria).sort(sort_criteria))
+    runs = list(db.database.find(match_criteria))[:10]
     #runs = [get_lowest_spin(db, match_criteria, )]
     # runs = sorted(runs, cmp=lambda x,y : Element(x['elements'][2]).number - Element(y['elements'][2]).number)
 
     print(len(runs))
+    print(runs[0])
     # for run in runs:
     #     print run['energy']
     view_multiple(runs)
+    client.close()

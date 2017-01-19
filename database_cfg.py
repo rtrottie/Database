@@ -29,7 +29,7 @@ sxdefectalign_output = {                    # definitions to scrape information 
     'Calculation':(-1, 'epsilon')
 }
 
-for path in ['/home/ryan/scratch/', '/export/home/mongodb/scratch', b'D:\Users\RyanTrottier\Documents\Scrap']:
+for path in ['/home/ryan/scratch/', '/export/home/mongodb/scratch', 'D:/Users/RyanTrottier/Documents/Scrap']:
     if os.path.exists(path):
         scrap_dir = path
         break
