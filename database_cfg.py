@@ -12,7 +12,7 @@ database_spec = {'ts'           : {'ts_type' : None, 'job_type' : 'ts', 'files' 
                  'convergence_study'  : {'job_type' : 'convergence', 'convergence_type' : None},
                  'dos'          : {'job_type' : 'dos', 'files' : [('procar', 'PROCAR'), ('doscar', 'DOSCAR')] + bader_files},
                  'doped'        : {'pure_material_elements' : None, 'dopant_atoms' : None, 'dopant_location' : None},
-                 'adsorption'   : {'material_elements' : None, 'adsorbate_name' : None, 'adsorbate_atoms' : None, 'adsorption_description' : None},
+                 'adsorption'   : {'adsorbate_name' : None, 'adsorbate_atoms' : None, 'adsorption_description' : None},
                  'defect'       : {'defect_type' : None, 'defect_location' : None},
                  'charged_defect':{'defect_center' : None, 'defect_charge' : None, 'defect' : None},
                  'surface'      : {'surface_cut' : None, 'surface_termination' : None},
