@@ -4,6 +4,8 @@ import os
 import AddDB
 
 
-folder = '/home/ryan/globus/defect_migration/Al-Fe-1/neb/67'
+
+
+folder = 'D:\\Users\\RyanTrottier\\Documents\\Globus\\69'
 
 AddDB.add_NEB('database', ['hercynite', 'feal2o4', folder], folder)
