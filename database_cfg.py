@@ -5,7 +5,7 @@ incar = ['ENCUT', 'EDIFF', 'ISIF', 'ISYM', 'LDAU', 'ISPIN', 'EDIFFG', 'ISMEAR', 
 default_files = ['POSCAR', 'CONTCAR', 'OUTCAR', 'vasprun.xml']
 bader_files = [('bader_acf', 'ACF.dat'),         ('bader_bcf', 'BCF.dat'),         ('bader_avf', 'AVF.dat'),
                ('bader_mag_acf', 'ACF_mag.dat'), ('bader_mag_bcf', 'BCF_mag.dat'), ('bader_mag_avf', 'AVF_mag.dat')]
-compressed_files = ['LOCPOT', 'CHG', 'CHGCAR', 'VASPRUN', 'OUTCAR']
+compressed_files = ['LOCPOT', 'CHG', 'CHGCAR', 'VASPRUN', 'OUTCAR', 'DOSCAR', 'PROCAR']
 
 database_spec = {'ts'           : {'ts_type' : None, 'job_type' : 'ts', 'files' : bader_files},
                  'relaxation'   : {'job_type' : 'relaxation', 'files' : bader_files},

@@ -218,6 +218,8 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
     :return: pymongo.results.InsertOneResult
     '''
 
+    from pymatgen.analysis.transition_state import NEBAnalysis
+
     # preparing variables
     incar = Incar.from_file(os.path.join(directory, 'INCAR'))
     images = incar['IMAGES']
@@ -231,7 +233,14 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
                                               ['Image', 'Force', 'Energy-Absolute', 'Energy-Relative'] )
     nebefs     = File_Management.file_to_dict(subprocess.check_output(['nebefs.pl']).replace(b'Rel Energy', b'Rel_Energy')) # Splits on whitespace, label must be one word
 
+    other_info['images'] = images
+    other_info['nebbarrier'] = nebbarrier
+    other_info['nebef'] = nebef
+    other_info['nebefs'] = nebefs
 
+    neb = NEBAnalysis('.')
+    other_info['energy'] = max(neb.energies)
+    other_info['energies'] = neb.energies
 
     return
 
