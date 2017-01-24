@@ -227,20 +227,26 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
 
     # Setting up NEB files
     os.chdir(directory)
-    nebbarrier = File_Management.file_to_dict(subprocess.check_output('nebbarrier.pl ; cat neb.dat', shell=True),
-                                                ['Image', 'Distance', 'Energy', 'Spring Forces' , 'Image_Duplicate'] )
-    nebef      = File_Management.file_to_dict(subprocess.check_output(['nebef.pl']),
-                                              ['Image', 'Force', 'Energy-Absolute', 'Energy-Relative'] )
-    nebefs     = File_Management.file_to_dict(subprocess.check_output(['nebefs.pl']).replace(b'Rel Energy', b'Rel_Energy')) # Splits on whitespace, label must be one word
+    # nebbarrier = File_Management.file_to_dict(subprocess.check_output('nebbarrier.pl ; cat neb.dat', shell=True),
+    #                                             ['Image', 'Distance', 'Energy', 'Spring Forces' , 'Image_Duplicate'] )
+    # nebef      = File_Management.file_to_dict(subprocess.check_output(['nebef.pl']),
+    #                                           ['Image', 'Force', 'Energy-Absolute', 'Energy-Relative'] )
+    # nebefs     = File_Management.file_to_dict(subprocess.check_output(['nebefs.pl']).replace(b'Rel Energy', b'Rel_Energy')) # Splits on whitespace, label must be one word
 
     other_info['images'] = images
-    other_info['nebbarrier'] = nebbarrier
-    other_info['nebef'] = nebef
-    other_info['nebefs'] = nebefs
+    # other_info['nebbarrier'] = nebbarrier
+    # other_info['nebef'] = nebef
+    # other_info['nebefs'] = nebefs
 
-    neb = NEBAnalysis('.')
+    neb = NEBAnalysis.from_dir('.')
     other_info['energy'] = max(neb.energies)
     other_info['energies'] = neb.energies
+    for i in range(images+2):
+        dir = str(i).zfill(2)
+        other_info['poscar.{}'.format(dir)] = Poscar.from_file('{}/{}'.format(dir,'POSCAR')).as_dict()
+        for name, location in other_files:
+            other_files.append(('{}.{}'.format(name,dir), '{}/{}'.format(dir,location)))
+
 
     return
 
@@ -320,7 +326,7 @@ def add_nupdown_convergence(collection, material, directory, other_info={}, othe
                      os.path.join(dir, 'POTCAR'), os.path.join(dir, 'CONTCAR'), os.path.join(dir, 'OUTCAR'), os.path.join(dir, 'vasprun.xml'),
                      other_info=other_info, other_files=other_files, check_convergence=check_convergence)
 
-def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
+def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
     '''
     Adds a VASP run to the database.  All input/output files must be provided in the arguments.
 
@@ -367,7 +373,8 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, outcar, 
     info['incar'] = incar                   # Incar is already a dict
     info['poscar'] = poscar.as_dict()
     info['kpoints'] = kpoints.as_dict()
-    info.update(get_vasprun_info(vasprun))
+    if 'energy' not in other_info:
+        info.update(get_vasprun_info(vasprun))
     info.update(other_info)
 
     # Check for convergence
@@ -495,6 +502,8 @@ if __name__ == '__main__':
     print(tags)
     print(other_files)
 
+    other_files.append(('outcar', 'OUTCAR'))
+
     if args.nupdown and 'convergence_type' in tags and tags['convergence_type'][0] == 'nupdown':
         add_nupdown_convergence('database', material, os.path.abspath('.'), tags, other_files=other_files)
     elif args.charged_defect and 'charged_defect' in tags['labels']:
@@ -513,7 +522,7 @@ if __name__ == '__main__':
             add_nupdown_convergence('database', material, os.path.abspath('.'), tags, check_convergence=args.cc)
         elif i.lower() == 'n':
             poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
-            add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'OUTCAR', 'vasprun.xml', tags, other_files, check_convergence=args.cc)
+            add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'vasprun.xml', tags, other_files, check_convergence=args.cc)
         else:
             raise Exception('Must say either y or n')
     elif os.path.exists('nupdown') and args.fn:
@@ -522,4 +531,4 @@ if __name__ == '__main__':
         add_MEP('database', material, os.path.abspath('.'), tags, other_files=other_files)
     else:
         poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
-        add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'OUTCAR', 'vasprun.xml', tags, other_files, check_convergence=args.cc)
+        add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'vasprun.xml', tags, other_files, check_convergence=args.cc)
