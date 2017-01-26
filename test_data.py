@@ -8,4 +8,4 @@ import AddDB
 
 folder = 'D:\\Users\\RyanTrottier\\Documents\\Globus\\69'
 
-AddDB.add_NEB('database', ['hercynite', 'feal2o4', folder], folder)
+AddDB.add_NEB('database', ['hercynite', 'feal2o4', folder], folder, other_files=[('outcar', 'OUTCAR'), ('acf.dat', 'ACF.dat')])

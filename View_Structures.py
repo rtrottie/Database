@@ -29,9 +29,11 @@ def view_multiple(runs):
     ase.io.write(filename, structs)
     return Vis.view(filename)
 
-def view(run):
+def view(run, program='jmol'):
     p = Poscar.from_dict(run['poscar'])
-    p = Vis.open_in_Jmol(p.structure)
+    filename = database_cfg.scrap()
+    p.write_file(filename + '.vasp')
+    p = Vis.view(filename, program)
     return p
 
 if __name__ == '__main__':
