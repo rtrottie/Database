@@ -17,7 +17,7 @@ database_spec = {'ts'           : {'ts_type' : None, 'job_type' : 'ts', 'files' 
                  'charged_defect':{'defect_center' : None, 'defect_charge' : None, 'defect' : None},
                  'surface'      : {'surface_cut' : None, 'surface_termination' : None},
                  'mep'          : {'job_type': 'mep', 'files' : bader_files}
-}
+}y
 
 sxdefectalign_output = {                    # definitions to scrape information from sxdefectalign output
     'vAlign'    : (-2, 'valign'),           # first word is output keyword, tuple has format:
