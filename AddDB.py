@@ -323,7 +323,7 @@ def add_nupdown_convergence(collection, material, directory, other_info={}, othe
     for (dir, nupdown) in dirs:
         other_info['NUPDOWN'] = nupdown
         add_vasp_run(collection, material, os.path.join(dir, 'INCAR'), os.path.join(dir, 'KPOINTS'),
-                     os.path.join(dir, 'POTCAR'), os.path.join(dir, 'CONTCAR'), os.path.join(dir, 'OUTCAR'), os.path.join(dir, 'vasprun.xml'),
+                     os.path.join(dir, 'POTCAR'), os.path.join(dir, 'CONTCAR'), os.path.join(dir, 'vasprun.xml'),
                      other_info=other_info, other_files=other_files, check_convergence=check_convergence)
 
 def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
@@ -361,7 +361,7 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
     potcar = Potcar.from_file(potcar)
     incar = Incar.from_file(incar)
     kpoints = Kpoints.from_file(kpoints)
-    files = [('outcar', outcar), ('vasprun', vasprun)] + other_files
+    files = [('vasprun', vasprun)] + other_files
 
     # Creating document information
     info = {
