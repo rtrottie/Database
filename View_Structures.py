@@ -31,8 +31,8 @@ def view_multiple(runs):
 
 def view(run, program='jmol'):
     p = Poscar.from_dict(run['poscar'])
-    filename = database_cfg.scrap()
-    p.write_file(filename + '.vasp')
+    filename = database_cfg.scrap() + '.vasp'
+    p.write_file(filename)
     p = Vis.view(filename, program)
     return p
 
