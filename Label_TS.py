@@ -20,17 +20,22 @@ match_criteria = {
     'ts_type' : {'$exists' : True},
     'ts_label': {'$exists' : False},
 }
+match_criteria = {
+    'material' : 'anatase',
+    'labels' : 'ts',
+    'ts_label': {'$exists' : False},
+}
 
-client = pymongo.MongoClient(client_ip)
-db = client.ryan
-fs = gridfs.GridFS(db)
+(db,fs,client) = AddDB.load_db()
 runs = db.database.find(match_criteria)
 for run in runs:
-    print run['dopant_atoms'][0] + ' ' + run['dopant_location'][0]
+    # print(run['dopant_atoms'][0] + ' ' + run['dopant_location'][0])
 
-    p = View_Structures.view_multiple([db.database.find_one({'_id' : ObjectId(run['min1'])}),
-                                       run,
-                                       db.database.find_one({'_id': ObjectId(run['min2'])})], fs)
+    # p = View_Structures.view_multiple([db.database.find_one({'_id' : ObjectId(run['min1'])}),
+    #                                    run,
+    #                                    db.database.find_one({'_id': ObjectId(run['min2'])})], fs)
+    p = View_Structures.view(run)
+    time.sleep(2)
     label = input('Label this TS or "delete" : \n --> ')
 
     if label == 'delete':

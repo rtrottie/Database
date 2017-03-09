@@ -19,32 +19,29 @@ try: input = raw_input
 except NameError: pass
 
 match_criteria = {
-    'dopant_atoms': 'cu',
-    'dopant_location': 'subsurface',
-    # 'verified_geometry' : {'$exists' : False},
-    'adsorption_description': 'hydride',
-    'dimer_min': {'$exists': False},
+    'material' : 'anatase',
+    'labels' : 'ts'
 }
 
 
 db, fs, client = load_db()
 runs = list(db.database.find(match_criteria).sort([("energy", pymongo.ASCENDING)]))
 View_Structures.view_multiple(runs)
-# print(len(runs))
-# for run in runs:
-#     print run
-#     p = View_Structures.view(run)
-#     time.sleep(1.5)
-#     label = input('Verify this state (y/n) (1/0) or "delete" : \n --> ')
-#
-#     if label == 'delete' or label == 'd':
-#         AddDB.delete(db.database, fs, run['_id'])
-#         print('DELETED')
-#     elif label == 'y' or label == '1':
-#         db.database.update_one({'_id' : run['_id']},
-#                                {'$set': {'verified_geometry' : True}})
-#     else:
-#         db.database.update_one({'_id' : run['_id']},
-#                                {'$set': {'adsorption_description' : label.split()}})
+print(len(runs))
+for run in runs:
+    print(run)
+    p = View_Structures.view(run)
+    time.sleep(2)
+    label = input('Verify this state (y/n) (1/0) or "delete" : \n --> ')
+
+    if label == 'delete' or label == 'd':
+        AddDB.delete(db.database, fs, run['_id'])
+        print('DELETED')
+    elif label == 'y' or label == '1':
+        db.database.update_one({'_id' : run['_id']},
+                               {'$set': {'verified_geometry' : True}})
+    else:
+        db.database.update_one({'_id' : run['_id']},
+                               {'$set': {'adsorption_description' : label.split()}})
 
 client.close()

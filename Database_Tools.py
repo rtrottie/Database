@@ -9,6 +9,7 @@ from bson import ObjectId
 from Classes_Pymatgen import *
 import sys
 import database_cfg
+import tempfile
 
 def fix_locpot(base_locpot, poscar):
     with open(base_locpot, 'r') as f:
@@ -86,7 +87,7 @@ def get_lowest_spin(db, match_criteria, updates={}):
         return matches[0]
 
 def compress(filename):
-    temp = database_cfg.scrap()
+    temp = tempfile.NamedTemporaryFile(delete=False).name
     print('Compressing ' + filename + '...', end='')
     sys.stdout.flush()
     with open(filename, 'rb') as f:  # compress LOCPOT

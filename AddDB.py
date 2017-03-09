@@ -455,7 +455,8 @@ def add_dir(collection, material, directory, other_info={}, other_files=[], forc
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # How to Tag Data
-    parser.add_argument('-d', '--database_file', help='Location of File to specify other important database tags (PLACEHOLDER DOESNT WORK)')
+    parser.add_argument('-d', '--database_file', help='Location of File to specify other important database tags',
+                        default=None)
     parser.add_argument('-p', '--parent_dirs', help='Number of Parent Dirs to look for DATABASE files.  Will use all found, favoring closer files. (Default: None)',
                         default=-1, type=int)
     parser.add_argument('-f', '--files', help='Extra Files to include (LOCPOT, CHG, CHGCAR, etc...)',
@@ -482,6 +483,8 @@ if __name__ == '__main__':
 
     # Find and Parse Database Files
     database_files = []
+    if args.database_file:
+        database_files.append(args.database_file)
     if args.parent_dirs >= 0:
         for pdi in range(args.parent_dirs, -1, -1):
             database_file = '../' * pdi + 'DATABASE'
