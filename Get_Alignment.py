@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import database_cfg
 import AddDB
+import os
+import tempfile
 
 def parse_vline(vline):
     potential = {
@@ -35,7 +37,7 @@ def parse_vline(vline):
 def parse_sxdefectalign(lines):
     alignment = {}
     for line in lines:
-        line = line.replace('=', ' ').replace(':', ' ').split()
+        line = line.replace(b'=', b' ').replace(b':', b' ').split()
         if line[0] in database_cfg.sxdefectalign_output:
             (i, name) = database_cfg.sxdefectalign_output[line[0]]
             alignment[name] = float(line[i])
@@ -45,16 +47,19 @@ def parse_sxdefectalign(lines):
 try: input = raw_input
 except NameError: pass
 base_match = {
-    'material' : 'znse',
+    'material' : 'cdte',
+    'locpot' : {'$exists' : True},
     'defect' : {'$exists' : False},
-    'converged' : True
+    'converged' : True,
+    'incar.LHFCALC' : True
 }
 match_criteria = {
-    'material' : 'znse',
+    'material' : 'cdte',
     'locpot' : {'$exists' : True},
     'defect' : {'$nin' : [],
                 '$exists' : True},
     'alignment.vline' : {'$exists' : False},
+    'incar.LHFCALC' : True
 }
 
 db, fs, client = AddDB.load_db()
@@ -62,29 +67,32 @@ db, fs, client = AddDB.load_db()
 base = Database_Tools.get_one(db, base_match)
 runs = list(db.database.find(match_criteria).sort('defect', pymongo.ASCENDING))
 base_locpot = Database_Tools.get_file(fs, base['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(base['poscar']))
-
-os.chdir(database_cfg.scrap_dir)
+tmp_dir = tempfile.TemporaryDirectory().name
+os.mkdir(tmp_dir)
+# os.chdir(tmp_dir)
 
 for run in runs:
     print(str(run['defect']) + ' ' + str(run['defect_charge']))
     locpot = Database_Tools.get_file(fs, run['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(run['poscar']))
     avg = np.array(0)
     vline_energies = []
+    command = ['sxdefectalign', '--vasp',
+               '--average', '1',
+               # '-a' + str(i+1),
+               '--vref', base_locpot,
+               '--vdef', locpot,
+               '--ecut', str(run['incar']['ENCUT']*0.073498618),
+               '--center', ','.join(run['defect_center']), '--relative',
+               '--eps', str(base['dielectric_constant']),
+               '-q', str(-run['defect_charge'])]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    process.wait()
+    output = process.stdout.readlines()
+    print(output)
+    alignment = parse_sxdefectalign(output)
+
     for i in range(3):
-        print('  ' + str(i))
-        command = ['sxdefectalign', '--vasp',
-                   '--average', '1',
-                   '-a' + str(i+1),
-                   '--vref', base_locpot,
-                   '--vdef', locpot,
-                   '--ecut', str(run['incar']['ENCUT']*0.073498618),
-                   '--center', ','.join(run['defect_center']), '--relative',
-                   '--eps', str(base['dielectric_constant']),
-                   '-q', str(-run['defect_charge'])]
-        process = subprocess.Popen(command, stdout=subprocess.PIPE)
-        process.wait()
-        alignment = parse_sxdefectalign(process.stdout.readlines())
-        vline = parse_vline('vline-eV.dat')
+        vline = parse_vline('vline-eV-a{}.dat'.format(i))
         # plt.plot(vline['z'], vline['V']['short_range'], label=str(i))
         vline_energies.append(list(vline['V']['short_range']))
         avg = avg + vline['V']['short_range']

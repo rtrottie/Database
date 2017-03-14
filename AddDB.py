@@ -449,7 +449,7 @@ def add_dir(collection, material, directory, other_info={}, other_files=[], forc
     poscar = os.path.join(directory, 'CONTCAR') if os.path.exists(os.path.join(directory, 'CONTCAR')) and os.path.getsize(os.path.join(directory, 'CONTCAR')) > 0 else os.path.join(directory, 'POSCAR')
     other_files = [ (n, os.path.join(directory, x)) for n, x in other_files ]
     return add_vasp_run(collection, material, os.path.join(directory, 'INCAR'), os.path.join(directory, 'KPOINTS'),
-                        os.path.join(directory, 'POTCAR'), os.path.join(directory, poscar), os.path.join(directory, 'OUTCAR'),
+                        os.path.join(directory, 'POTCAR'), os.path.join(directory, poscar),
                         os.path.join(directory, 'vasprun.xml'), other_info=other_info, other_files=other_files, force=force)
 
 if __name__ == '__main__':

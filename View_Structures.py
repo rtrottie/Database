@@ -13,8 +13,8 @@ from ase import Atoms
 import database_cfg
 from AddDB import load_db
 
-SCRATCH = '/home/ryan/scratch/scratch.cif'
-os.environ['VESTA_DIR'] = '/home/ryan/programs/VESTA-x86_64'
+# SCRATCH = '/home/ryan/scratch/scratch.cif'
+# os.environ['VESTA_DIR'] = '/home/ryan/programs/VESTA-x86_64'
 
 def view_multiple(runs):
     structs = []
