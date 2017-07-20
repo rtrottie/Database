@@ -351,12 +351,12 @@ def add_multiple_convergence(collection, material, directories=['.'], suffixes=[
     for directory in directories:
         for suffix in suffixes:
             def loc(f):             # function to make filename
-                return os.path.join(directory, 'f{}'.format(suffix))
+                return os.path.join(directory, '{}{}'.format(f,suffix))
             if other_info_function:
                 other_info = other_info_function(directory, suffix, other_info)
             info.append(add_vasp_run(collection=collection, material=material, incar=loc('INCAR'), kpoints=loc('KPOINTS'),
                                      potcar='POTCAR', contcar=loc('CONTCAR'), vasprun=loc('vasprun.xml'),
-                                     other_info=other_info, other_files=[ loc(f) for f in other_files ],
+                                     other_info=other_info, other_files=[ (n, loc(f)) for (n, f) in other_files ],
                                      check_convergence=check_convergence))
     return info
 
@@ -364,12 +364,21 @@ def add_encut_convergence(collection, material, directory, other_info, other_fil
     suffix = [ f.replace('CONTCAR', '') for f in os.listdir(directory) if 'CONTCAR.encut' in f ]
     def other_info_function(directory, suffix, other_info):
         other_info = copy.deepcopy(other_info) # copy other_info to avoid overwritting
-        other_info['ENCUT'] = int(suffix.replace('.encut.',''))
+        other_info['encut_convergence'] = int(suffix.replace('.encut.',''))
         return other_info
     return add_multiple_convergence(collection, material, directories=[directory], suffixes=suffix,
                                     other_info_function=other_info_function, other_info=other_info, other_files=other_files,
                                     check_convergence=True)
 
+def add_kpoint_convergence(collection, material, directory, other_info, other_files):
+    suffix = [ f.replace('CONTCAR', '') for f in os.listdir(directory) if 'CONTCAR.kpoints' in f ]
+    def other_info_function(directory, suffix, other_info):
+        other_info = copy.deepcopy(other_info) # copy other_info to avoid overwritting
+        other_info['kpoint_convergence'] = suffix.replace('.kpoints.','')
+        return other_info
+    return add_multiple_convergence(collection, material, directories=[directory], suffixes=suffix,
+                                    other_info_function=other_info_function, other_info=other_info, other_files=other_files,
+                                    check_convergence=True)
 
 def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
     '''
@@ -441,6 +450,7 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
 
     # Prepare Files to be added to DB
     info['files'] = []
+    print(files)
     for (filename, filepath) in files:
         if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
             fileID = add_file(fs, filepath, filename)
@@ -514,6 +524,8 @@ if __name__ == '__main__':
     # Specifc runs that will be added
     parser.add_argument('-n', '--nupdown', help='Specifies this is a Nupdown run both this flag and label must be set',
                         action='store_true')
+    parser.add_argument('--convergence', help='Specifies that a convergence run is being added.  Appropriate flag and label must match',
+                        type=str, default=None)
     parser.add_argument('-c', '--charged_defect', help='Specifies this is a Charged Defect run both this flag and label must be set',
                         action='store_true')
     parser.add_argument('--fn', '--force-nupdown', help='Force adding all NUPDOWN',
@@ -552,6 +564,17 @@ if __name__ == '__main__':
 
     other_files.append(('outcar', 'OUTCAR'))
 
+    if os.path.exists('nupdown') and not args.fn:
+        i = input('nupdown folder found.  Add folder or no? (y/n)\n  -->  ')
+        if i.lower() == 'y':
+            add_nupdown_convergence('database', material, os.path.abspath('.'), tags, check_convergence=args.cc)
+        elif i.lower() == 'n':
+            # poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
+            # add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'vasprun.xml', tags, other_files, check_convergence=args.cc)
+            pass
+        else:
+            raise Exception('Must say either y or n')
+
     if args.nupdown and 'convergence_type' in tags and tags['convergence_type'][0] == 'nupdown':
         add_nupdown_convergence('database', material, os.path.abspath('.'), tags, other_files=other_files)
     elif args.charged_defect and 'charged_defect' in tags['labels']:
@@ -564,15 +587,23 @@ if __name__ == '__main__':
     #     if tags['ts_type'][0] != 'dimer':
     #         raise Exception('Dimer run, dimer ts_type must be set and ICHAIN = 2 in INCAR')
     #     add_dimer_run('database', material, os.path.abspath('.'), other_info=tags, other_files=other_files)
-    elif os.path.exists('nupdown') and not args.fn:
-        i = input('nupdown folder found.  Add folder or no? (y/n)\n  -->  ')
-        if i.lower() == 'y':
-            add_nupdown_convergence('database', material, os.path.abspath('.'), tags, check_convergence=args.cc)
-        elif i.lower() == 'n':
-            poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
-            add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'vasprun.xml', tags, other_files, check_convergence=args.cc)
+    # elif os.path.exists('nupdown') and not args.fn:
+    #     i = input('nupdown folder found.  Add folder or no? (y/n)\n  -->  ')
+    #     if i.lower() == 'y':
+    #         add_nupdown_convergence('database', material, os.path.abspath('.'), tags, check_convergence=args.cc)
+    #     elif i.lower() == 'n':
+    #         poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
+    #         add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'vasprun.xml', tags, other_files, check_convergence=args.cc)
+    #     else:
+    #         raise Exception('Must say either y or n')
+    elif args.convergence:
+        if 'convergence_type' not in tags or tags['convergence_type'][0] != args.convergence: # if Convergence tag and label are not set correctly
+            raise Exception('Convergence _type in DATABASE file does not match --convergence provided')
+        elif args.convergence == 'encut':
+            add_encut_convergence('database', material, directory=os.path.abspath('.'), other_info=tags, other_files=other_files)
         else:
-            raise Exception('Must say either y or n')
+            raise Exception('Convergence type not yet implemented')
+
     elif os.path.exists('nupdown') and args.fn:
         add_nupdown_convergence('database', material, os.path.abspath('.'), tags, other_files)
     elif args.mep:
