@@ -326,6 +326,36 @@ def add_nupdown_convergence(collection, material, directory, other_info={}, othe
                      os.path.join(dir, 'POTCAR'), os.path.join(dir, 'CONTCAR'), os.path.join(dir, 'vasprun.xml'),
                      other_info=other_info, other_files=other_files, check_convergence=check_convergence)
 
+def add_multiple_convergence(collection, material, directories=['.'], suffixes=[''], other_info={}, other_files=[], check_convergence=True):
+    '''
+
+    :param collection: str
+        Name of Collection for Database
+    :param material: str
+        name of Material that will be added to database
+    :param directories: str list
+        directories from which to find VASP output files.  Each run will be added separatly
+    :param suffixes:
+        suffixes from which to find VASP output files in a given directory.  Each run will be added separatly
+    :param other_info: dict
+        Other identifying info that will be included in database documet
+    :param other_files: list
+        Other files that should be stored
+    :param check_convergence: bool
+        Check for convergence (Default True).  If convergence is not found and this is True, do not add run to DB
+    :return:
+    '''
+    for directory in directories:
+        for suffix in suffixes:
+            def loc(f):             # function to make
+                return os.path.join(directory, 'f{}'.format(suffix))
+            add_vasp_run(collection=collection, material=material, incar=loc('INCAR'), kpoints=loc('KPOINTS'),
+                         potcar='POTCAR', contcar=loc('CONTCAR'), vasprun=loc('vasprun.xml'),
+                         other_info=other_info, other_files=[ loc(f) for f in other_files ], check_convergence=check_convergence)
+
+def add_encut_convergence(collection, material):
+
+
 def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
     '''
     Adds a VASP run to the database.  All input/output files must be provided in the arguments.
