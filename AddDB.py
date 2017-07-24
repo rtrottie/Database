@@ -370,11 +370,11 @@ def add_encut_convergence(collection, material, directory, other_info, other_fil
                                     other_info_function=other_info_function, other_info=other_info, other_files=other_files,
                                     check_convergence=True)
 
-def add_kpoint_convergence(collection, material, directory, other_info, other_files):
+def add_kpoints_convergence(collection, material, directory, other_info, other_files):
     suffix = [ f.replace('CONTCAR', '') for f in os.listdir(directory) if 'CONTCAR.kpoints' in f ]
     def other_info_function(directory, suffix, other_info):
         other_info = copy.deepcopy(other_info) # copy other_info to avoid overwritting
-        other_info['kpoint_convergence'] = suffix.replace('.kpoints.','')
+        other_info['kpoints_convergence'] = suffix.replace('.kpoints.','').split('x')
         return other_info
     return add_multiple_convergence(collection, material, directories=[directory], suffixes=suffix,
                                     other_info_function=other_info_function, other_info=other_info, other_files=other_files,
@@ -601,6 +601,8 @@ if __name__ == '__main__':
             raise Exception('Convergence _type in DATABASE file does not match --convergence provided')
         elif args.convergence == 'encut':
             add_encut_convergence('database', material, directory=os.path.abspath('.'), other_info=tags, other_files=other_files)
+        elif args.convergence == 'kpoints':
+            add_kpoints_convergence('database', material, directory=os.path.abspath('.'), other_info=tags, other_files=other_files)
         else:
             raise Exception('Convergence type not yet implemented')
 
