@@ -29,10 +29,10 @@ def view_multiple(runs):
     ase.io.write(filename, structs)
     return Vis.view(filename)
 
-def view(run, program='jmol'):
+def view(run, program='vesta'):
     p = Poscar.from_dict(run['poscar'])
     filename = database_cfg.scrap() + '.cif'
-    p.write_file(filename)
+    p.structure.to('cif', filename)
     p = Vis.view(filename, program)
     return p
 

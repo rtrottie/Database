@@ -19,9 +19,9 @@ except NameError: pass
 
 
 def get_database_info(label, atom):
-    if atom == 'fe':
+    if atom == 'Fe':
         if label == 'Water':
-            return {'defect_type': 'o-vac',
+            return {'defect_type': ['o-vac'],
                     'defect_location': 'active',
                     'adsorption_description': {'$exists': False}
                     }
@@ -41,8 +41,8 @@ def get_database_info(label, atom):
                     'adsorption_description': {'$all': ['chemisorbed', 'hydrogen']}
                     }
         if label == 'Hydrogen':
-            return {'defect_type': 'o-vac',
-                    'defect_location': 'active',
+            return {'defect_type': {'$exists': False},
+                    'defect_location': {'$exists': False},
                     'adsorption_description': {'$exists': False}
                     }
 
@@ -76,30 +76,30 @@ match_criteria = {
         'material' : 'hercynite',
         'labels' : {'$nin' : ['dos', 'nupdown'],
                     '$in'  : ['relaxation']},
-        'dimer_min' : {'$exists' : False}
+        'dimer_min' : {'$exists' : False},
+'verified_geometry' : {'$exists' : False}
     }
 db, fs, client = load_db()
-for atom in ['Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn']:
+for atom in ['Al', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn']:
     for label in ['Water', 'Adsorbed', 'Dissociated', 'Adsorbed Hydrogen', 'Hydrogen']:
         match_criteria.update(get_database_info(label, atom))
         runs = list(db.database.find(match_criteria).sort([("energy", pymongo.ASCENDING)]))
         # View_Structures.view_multiple(runs)
-        print('{} {}'.format(atom, label))
-        print(len(runs))
         for run in runs:
-            print(run)
             p = View_Structures.view(run)
             time.sleep(2)
-            label = input('Verify this state (y/n) (1/0) or "delete" : \n --> ')
-
-            if label == 'delete' or label == 'd':
+            print(run)
+            print('{} {}'.format(atom, label))
+            verified = input('Verify this state (y/n) (1/0) or "delete" : \n --> ')
+            p.kill()
+            if verified == 'delete' or verified == 'd':
                 AddDB.delete(db.database, fs, run['_id'])
                 print('DELETED')
-            elif label == 'y' or label == '1':
+            elif verified == 'y' or verified == '1':
                 db.database.update_one({'_id' : run['_id']},
                                        {'$set': {'verified_geometry' : True}})
             else:
                 db.database.update_one({'_id' : run['_id']},
-                                       {'$set': {'adsorption_description' : label.split()}})
+                                       {'$set': {'adsorption_description' : verified.split()}})
 
         client.close()
