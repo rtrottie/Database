@@ -77,12 +77,12 @@ match_criteria = {
         'labels' : {'$nin' : ['dos', 'nupdown'],
                     '$in'  : ['relaxation']},
         'dimer_min' : {'$exists' : False},
-# 'verified_geometry' : {'$exists' : False}
+'verified_geometry' : {'$exists' : False}
     }
 db, fs, client = load_db()
 for atom in ['Al', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn']:
-    # for label in ['Water', 'Adsorbed', 'Dissociated', 'Adsorbed Hydrogen', 'Hydrogen']:
-    for label in ['Adsorbed']:
+    for label in ['Water', 'Adsorbed', 'Dissociated', 'Adsorbed Hydrogen', 'Hydrogen']:
+    # for label in ['Adsorbed']:
         match_criteria.update(get_database_info(label, atom))
         runs = list(db.database.find(match_criteria).sort([("energy", pymongo.ASCENDING)]))
         # View_Structures.view_multiple(runs)
