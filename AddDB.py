@@ -380,7 +380,7 @@ def add_kpoints_convergence(collection, material, directory, other_info, other_f
                                     other_info_function=other_info_function, other_info=other_info, other_files=other_files,
                                     check_convergence=True)
 
-def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True):
+def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True, ignore_unconverged=False):
     '''
     Adds a VASP run to the database.  All input/output files must be provided in the arguments.
 
@@ -433,6 +433,9 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
 
     # Check for convergence
     if not info['converged'] and check_convergence:
+        if ignore_unconverged:
+            print('Not Adding Unconverged Run')
+            return
         continueP = input('Run is not Converged.  Add Anyway? (y/n)\n --> ')
         if continueP == 'y' or continueP == 'yes':
             pass
@@ -534,6 +537,8 @@ if __name__ == '__main__':
                         action='store_true')
     parser.add_argument('--cc', '--check_convergence', help='Don"t check convergence',
                         action='store_false')
+    parser.add_argument('--ignore_unconverged', help='Ignore Unconverged Run',
+                        action='store_true')
     parser.add_argument('--neb', help='add NEB run',
                         action='store_true')
     args = parser.parse_args()
@@ -612,4 +617,4 @@ if __name__ == '__main__':
         add_MEP('database', material, os.path.abspath('.'), tags, other_files=other_files)
     else:
         poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
-        add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'vasprun.xml', tags, other_files, check_convergence=args.cc)
+        add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'vasprun.xml', tags, other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged)
