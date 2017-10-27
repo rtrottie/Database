@@ -181,7 +181,7 @@ def get_vasprun_info(vasprun):
         }
     return info
 
-def add_charged_defect(collection, material, directory, other_info, other_files=[]):
+def add_charged_defect(collection, material, directory, other_info, other_files=[], check_convergence=True, ignore_unconverged=False):
     print('Adding a Charged defect, must be in charged defect cell or directory with ... n3 n2 n1 0 1 2 3 ...')
     if os.path.exists(os.path.join(directory, 'INCAR')):  # is run directory
         dirs = [('', int(other_info['defect_charge'][0]))]
@@ -200,7 +200,7 @@ def add_charged_defect(collection, material, directory, other_info, other_files=
         #         b.write(f.read())
         # print('Compressed')
         other_info['defect_charge'] = charge
-        add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))])
+        add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))], check_convergence=check_convergence, ignore_unconverged=ignore_unconverged)
 
 def add_NEB(collection, material, directory, other_info={}, other_files=[]):
     '''
@@ -502,13 +502,13 @@ def add_gsm_run(collection, material, directory, other_info={}, other_files = []
     ts_i = energies.index(max(energies))
     return collection.insert_one()
 
-def add_dir(collection, material, directory, other_info={}, other_files=[], force=False):
+def add_dir(collection, material, directory, other_info={}, other_files=[], force=False, check_convergence=True, ignore_unconverged=False):
     print(other_files)
     poscar = os.path.join(directory, 'CONTCAR') if os.path.exists(os.path.join(directory, 'CONTCAR')) and os.path.getsize(os.path.join(directory, 'CONTCAR')) > 0 else os.path.join(directory, 'POSCAR')
     other_files = [ (n, os.path.join(directory, x)) for n, x in other_files ]
     return add_vasp_run(collection, material, os.path.join(directory, 'INCAR'), os.path.join(directory, 'KPOINTS'),
                         os.path.join(directory, 'POTCAR'), os.path.join(directory, poscar),
-                        os.path.join(directory, 'vasprun.xml'), other_info=other_info, other_files=other_files, force=force)
+                        os.path.join(directory, 'vasprun.xml'), other_info=other_info, other_files=other_files, force=force, check_convergence=check_convergence, ignore_unconverged=ignore_unconverged)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
