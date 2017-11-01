@@ -21,13 +21,13 @@ database_spec = {'ts'           : {'ts_type' : None, 'job_type' : 'ts', 'files' 
 }
 
 sxdefectalign_output = {                    # definitions to scrape information from sxdefectalign output
-    'vAlign'    : (-2, 'valign'),           # first word is output keyword, tuple has format:
-    'eAlign'    : (-2, 'ealign'),           #       (index of number, desired name for number)
-    'Isolated'  : (-1, 'energy_isolated'),
-    'Periodic'  : (-1, 'energy_periodic'),
-    'Difference': (-1, 'difference'),
-    'Defect'    : (-5, 'correction'),
-    'Calculation':(-1, 'epsilon')
+    b'vAlign'    : (-2, 'valign'),           # first word is output keyword, tuple has format:
+    b'eAlign'    : (-2, 'ealign'),           #       (index of number, desired name for number)
+    b'Isolated'  : (-1, 'energy_isolated'),
+    b'Periodic'  : (-1, 'energy_periodic'),
+    b'Difference': (-1, 'difference'),
+    b'Defect'    : (-5, 'correction'),
+    b'Calculation':(-1, 'epsilon')
 }
 
 for path in ['/home/ryan/scratch/', '/export/home/mongodb/scratch', 'D:/Users/RyanTrottier/Documents/Scrap']:
