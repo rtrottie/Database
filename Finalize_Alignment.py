@@ -35,7 +35,7 @@ for match_criteria in match_criterias:
         print(str(run['defect']) + ' ' + str(run['defect_charge']))
         locpot = Database_Tools.get_file(fs, run['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(run['poscar']))
         command = ['sxdefectalign', '--vasp',
-                   '--average', '1',
+                   '--average', '5',
                    '--vref', base_locpot,
                    '--vdef', locpot,
                    '--ecut', str(run['incar']['ENCUT']*0.073498618),
