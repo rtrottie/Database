@@ -84,6 +84,45 @@ def get_lowest_spin(db, match_criteria, updates={}):
             display = match_criteria.copy()
             display.update({'NUPDOWN': nup})
             print('Too Many Matches for :' + str(display))
+
+def get_lowest_spin(db, match_criteria, updates={}):
+    '''
+
+    :param db: Collection
+    :type match_criteria: dict
+    :type update: dict
+    :return:
+    '''
+    if type(updates) == type({}):
+        updates = [updates]
+    for update in updates:
+        if 'energy' not in update or 'energy' not in match_criteria:
+            update['energy'] = {'$exists' : True}
+        match_criteria = match_criteria.copy()
+        match_criteria.update(update)
+    matches = list(db.database.find(match_criteria).sort([("energy", pymongo.ASCENDING)]))
+
+    if len(matches) == 1:
+        return matches[0]
+    elif len(matches) == 0:
+        return None
+    else:
+        try:
+            nup = matches[0]['incar']['NUPDOWN']
+        except:
+            nup = {'$exists' : False}
+        count = 0
+        for match in matches:
+            try:
+                nup_test = match['incar']['NUPDOWN']
+            except:
+                nup_test = {'$exists' : False}
+            if nup_test == nup:
+                count += 1
+        if count > 1:
+            display = match_criteria.copy()
+            display.update({'NUPDOWN': nup})
+            print('Too Many Matches for :' + str(display))
         return matches[0]
 
 def compress(filename):
