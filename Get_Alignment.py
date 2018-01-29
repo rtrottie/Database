@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import pymongo
 import gridfs
 import subprocess
@@ -61,148 +63,25 @@ except NameError: pass
 # }
 #
 match_criterias = [
-# {
-#     'material' : {'$all': ['mnte', 'nickeline']},
-#     'antiferromagnetic_label' : 'afi',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.METAGGA' : 'Scan'
-# },
-# {
-#     'material' : {'$all': ['mnte', 'wurtzite']},
-#     'antiferromagnetic_label' : 'afiii',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.METAGGA' : 'Scan'
-# },
-# {
-#     'material' : {'$all': ['mnte', 'wurtzite']},
-#     'antiferromagnetic_label' : 'afiv',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.METAGGA' : 'Scan'
-# },
-# {
-#     'material' : {'$all': ['mnte', 'zincblende']},
-#     'antiferromagnetic_label' : 'afi',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.METAGGA' : 'Scan'
-# },
-# {
-#     'material' : {'$all': ['mnte', 'zincblende']},
-#     'antiferromagnetic_label' : 'afiii',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.METAGGA' : 'Scan'
-# },
-# {
-#     'material' : {'$all': ['mnte', 'nickeline']},
-#     'antiferromagnetic_label' : 'afi',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.LHFCALC' : True
-# },
-# {
-#     'material' : {'$all': ['mnte', 'wurtzite']},
-#     'antiferromagnetic_label' : 'afiii',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.LHFCALC' : True
-# },
-# {
-#     'material' : {'$all': ['mnte', 'wurtzite']},
-#     'antiferromagnetic_label' : 'afiv',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.LHFCALC' : True
-# },
-# {
-#     'material' : {'$all': ['mnte', 'zincblende']},
-#     'antiferromagnetic_label' : 'afi',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.LHFCALC' : True
-# },
-# {
-#     'material' : {'$all': ['mnte', 'zincblende']},
-#     'antiferromagnetic_label' : 'afiii',
-#     'locpot' : {'$exists' : True},
-#     'defect' : {'$nin' : [],
-#                 '$exists' : True},
-#     'alignment.vline' : {'$exists' : False},
-#     'incar.LHFCALC' : True
-# },
-{
-    'material' : {'$all': ['mnte', 'nickeline']},
-    'antiferromagnetic_label' : 'afi',
-    'locpot' : {'$exists' : True},
-    'defect' : {'$nin' : [],
-                '$exists' : True},
-    'alignment.vline' : {'$exists' : False},
-    'incar.LDAU' : True
-},
-{
-    'material' : {'$all': ['mnte', 'wurtzite']},
-    'antiferromagnetic_label' : 'afiii',
-    'locpot' : {'$exists' : True},
-    'defect' : {'$nin' : [],
-                '$exists' : True},
-    'alignment.vline' : {'$exists' : False},
-    'incar.LDAU' : True
-},
-{
-    'material' : {'$all': ['mnte', 'wurtzite']},
-    'antiferromagnetic_label' : 'afiv',
-    'locpot' : {'$exists' : True},
-    'defect' : {'$nin' : [],
-                '$exists' : True},
-    'alignment.vline' : {'$exists' : False},
-    'incar.LDAU' : True
-},
-{
-    'material' : {'$all': ['mnte', 'zincblende']},
-    'antiferromagnetic_label' : 'afi',
-    'locpot' : {'$exists' : True},
-    'defect' : {'$nin' : [],
-                '$exists' : True},
-    'alignment.vline' : {'$exists' : False},
-    'incar.LDAU' : True
-},
-{
-    'material' : {'$all': ['mnte', 'zincblende']},
-    'antiferromagnetic_label' : 'afiii',
-    'locpot' : {'$exists' : True},
-    'defect' : {'$nin' : [],
-                '$exists' : True},
-    'alignment.vline' : {'$exists' : False},
-    'incar.LDAU' : True
-}
+{'material' : 'hercynite',
+                  'job_type' : 'relaxation',
+                  'energy' : {'$exists' : True},
+                  'labels' : {'$nin' : ['ts', 'surface'], '$in' : ['charged_defect']},
+                  'defect_type' : {'$exists' : True},
+                'adsorption_description': {'$exists': False},
+        'poscar.structure.sites.100' : {'$exists' : True},
+                 }
 ]
 if __name__ == '__main__':
     db, fs, client = AddDB.load_db()
     for match_criteria in match_criterias:
-
-        base_match = copy.deepcopy(match_criteria)
-        base_match['defect'] = {'$exists' : False}
+        base_match = {'material' : 'hercynite',
+                  'job_type' : 'relaxation',
+                  'energy' : {'$exists' : True},
+                  'labels' : {'$nin' : ['ts', 'surface', 'charged_defect']},
+                  'defect_type' : {'$exists' : False},
+                'adsorption_description': {'$exists': False},
+                 }
 
         print(base_match)
 
