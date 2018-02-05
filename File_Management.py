@@ -12,7 +12,7 @@ def file_to_dict(acf, labels=None):
     if not labels:
         labels = lines[0].split()
         lines = lines[1:]
-
+    # print(lines)
     # create output dictionary and initialize
     ACF = {}
     for label in labels:

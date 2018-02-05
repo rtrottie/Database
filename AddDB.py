@@ -241,13 +241,15 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
     neb = NEBAnalysis.from_dir('.')
     other_info['energy'] = max(neb.energies)
     other_info['energies'] = neb.energies
+    max_i = list(neb.energies).index(max(neb.energies))
+    new_files = []
     for i in range(images+2):
         dir = str(i).zfill(2)
         other_info['poscar.{}'.format(dir)] = Poscar.from_file('{}/{}'.format(dir,'POSCAR')).as_dict()
         for name, location in other_files:
-            other_files.append(('{}.{}'.format(name,dir), '{}/{}'.format(dir,location)))
+            new_files.append(('{}.{}'.format(name,dir), '{}/{}'.format(dir,location)))
 
-
+    add_vasp_run(collection, material, 'INCAR', 'KPOINTS', 'POTCAR', os.path.join(str(max_i).zfill(2), 'CONTCAR'), 'vasprun.xml', other_info=other_info, other_files=new_files)
     return
 
 def add_MEP(collection, material, directory, other_info, other_files=[]):
@@ -615,6 +617,8 @@ if __name__ == '__main__':
         add_nupdown_convergence('database', material, os.path.abspath('.'), tags, other_files)
     elif args.mep:
         add_MEP('database', material, os.path.abspath('.'), tags, other_files=other_files)
+    elif args.neb:
+        add_NEB('database', material, os.path.abspath('.'), tags, other_files=other_files)
     else:
         poscar = 'CONTCAR' if os.path.exists('CONTCAR') and os.path.getsize('CONTCAR') > 0 else 'POSCAR'
         add_vasp_run('database', material, 'INCAR', 'KPOINTS', 'POTCAR', poscar, 'vasprun.xml', tags, other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged)
