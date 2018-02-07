@@ -36,6 +36,19 @@ def view(run, program='vesta'):
     p = Vis.view(filename, program)
     return p
 
+def view_neb(run):
+    structs = []
+    for i in range(run['images']+2):
+        p = Poscar.from_dict(run['poscar_{}'.format(str(i).zfill(2))])
+        filename = database_cfg.scrap()
+        p.write_file(filename)
+        with open(filename) as f:
+            structs.append(ase.io.read(f, format='vasp'))
+        os.remove(filename)
+    filename = database_cfg.scrap() + '.cif'
+    ase.io.write(filename, structs)
+    return Vis.view(filename)
+
 if __name__ == '__main__':
     match_criteria = {
     'material' : 'hercynite',
