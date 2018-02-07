@@ -429,8 +429,10 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
     info['incar'] = incar                   # Incar is already a dict
     info['poscar'] = poscar.as_dict()
     info['kpoints'] = kpoints.as_dict()
-    if 'energy' not in other_info:
-        info.update(get_vasprun_info(vasprun))
+    vasprun_info = get_vasprun_info(vasprun)
+    if 'energy' in other_info:
+        del vasprun_info['energy']
+    info.update(vasprun_info)
     info.update(other_info)
 
     # Check for convergence
