@@ -240,7 +240,7 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
 
     neb = NEBAnalysis.from_dir('.')
     other_info['energy'] = max(neb.energies)
-    other_info['energies'] = neb.energies
+    other_info['energies'] = list(neb.energies)
     max_i = list(neb.energies).index(max(neb.energies))
     new_files = []
     for i in range(images+2):
