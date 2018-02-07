@@ -58,7 +58,7 @@ def delete(database, fs, id):
     database.delete_one({'_id' : id})
 
 def add_file(fs, filepath, filename=''):
-    if filename.upper() not in database_cfg.compressed_files:
+    if True not in [compressed_filename in filename.upper() for compressed_filename in database_cfg.compressed_files]:
         with open(filepath, 'rb') as f:
             fileID = fs.put(f)
     else:
