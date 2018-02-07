@@ -245,9 +245,9 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
     new_files = []
     for i in range(images+2):
         dir = str(i).zfill(2)
-        other_info['poscar.{}'.format(dir)] = Poscar.from_file('{}/{}'.format(dir,'POSCAR')).as_dict()
+        other_info['poscar_{}'.format(dir)] = Poscar.from_file('{}/{}'.format(dir,'POSCAR')).as_dict()
         for name, location in other_files:
-            new_files.append(('{}.{}'.format(name,dir), '{}/{}'.format(dir,location)))
+            new_files.append(('{}_{}'.format(name,dir), '{}/{}'.format(dir,location)))
 
     add_vasp_run(collection, material, 'INCAR', 'KPOINTS', 'POTCAR', os.path.join(str(max_i).zfill(2), 'CONTCAR'), 'vasprun.xml', other_info=other_info, other_files=new_files)
     return
