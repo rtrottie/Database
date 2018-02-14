@@ -463,7 +463,7 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
 
     # Prepare Files to be added to DB
     info['files'] = []
-    print(files)
+    # print(files)
     for (filename, filepath) in files:
         if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
             fileID = add_file(fs, filepath, filename)
