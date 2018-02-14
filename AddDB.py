@@ -95,7 +95,7 @@ def entry_exists(database, info):
         if item in info:
             info[item] = {'$exists' : True}
 
-    print(info)
+    # print(info)
     r = list(database.find(info))
     if len(r) > 1:
         return True
@@ -250,7 +250,7 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
             new_files.append(('{}_{}'.format(name,dir), '{}/{}'.format(dir,location)))
 
     (db, fs, client) = load_db()
-    if entry_exists(collection, other_info):
+    if entry_exists(db[collection], {'energy' : max(neb.energies), 'energies' : list(neb.energies)}):
         print('Identical Entry Exists')
         client.close()
         return False
