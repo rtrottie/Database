@@ -249,6 +249,12 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
         for name, location in other_files:
             new_files.append(('{}_{}'.format(name,dir), '{}/{}'.format(dir,location)))
 
+    (db, fs, client) = load_db()
+    if entry_exists(collection, other_info):
+        print('Identical Entry Exists')
+        client.close()
+        return False
+    client.close()
     add_vasp_run(collection, material, 'INCAR', 'KPOINTS', 'POTCAR', os.path.join(str(max_i).zfill(2), 'CONTCAR'), 'vasprun.xml', other_info=other_info, other_files=new_files)
     return
 
