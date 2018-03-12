@@ -81,6 +81,7 @@ if __name__ == '__main__':
                   'labels' : {'$nin' : ['ts', 'surface', 'charged_defect']},
                   'defect_type' : {'$exists' : False},
                 'adsorption_description': {'$exists': False},
+                  'files' : {'$all' : ['locpot']},
                  }
 
         print(base_match)

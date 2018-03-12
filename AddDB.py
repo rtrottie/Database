@@ -91,15 +91,17 @@ def entry_exists(database, info):
         id = ''
 
     # Remove POSCAR, INCAR, and KPOINTS which do not match correctly
-    for item in ['poscar', 'kpoints', 'incar']:
+    for item in ['poscar', 'kpoints']:
         if item in info:
             info[item] = {'$exists' : True}
 
     # print(info)
     r = list(database.find(info))
     if len(r) > 1:
+        print(info)
         return True
     elif len(r) == 1 and str(id) != str(r[0]['_id']):
+        print(info)
         return True
     else:
         return False
