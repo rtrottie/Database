@@ -439,7 +439,10 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
     info['kpoints'] = kpoints.as_dict()
     vasprun_info = get_vasprun_info(vasprun)
     if 'energy' in other_info:
-        del vasprun_info['energy']
+        try:
+            del vasprun_info['energy']
+        except:
+            'Print Energy not found in  vasprun.xml, likely unconverged'
     info.update(vasprun_info)
     info.update(other_info)
 
