@@ -442,7 +442,7 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
         try:
             del vasprun_info['energy']
         except:
-            'Print Energy not found in  vasprun.xml, likely unconverged'
+            print('Energy not found in  vasprun.xml, likely unconverged')
     info.update(vasprun_info)
     info.update(other_info)
 
