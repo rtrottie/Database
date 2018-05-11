@@ -72,17 +72,18 @@ match_criterias = [
         'poscar.structure.sites.100' : {'$exists' : True},
                  }
 ]
-if __name__ == '__main__':
-    db, fs, client = AddDB.load_db()
-    for match_criteria in match_criterias:
-        base_match = {'material' : 'hercynite',
+base_match = {'material' : 'hercynite',
                   'job_type' : 'relaxation',
                   'energy' : {'$exists' : True},
                   'labels' : {'$nin' : ['ts', 'surface', 'charged_defect']},
                   'defect_type' : {'$exists' : False},
                 'adsorption_description': {'$exists': False},
                   'files' : {'$all' : ['locpot']},
+        'poscar.structure.sites.100' : {'$exists' : True},
                  }
+if __name__ == '__main__':
+    db, fs, client = AddDB.load_db()
+    for match_criteria in match_criterias:
 
         print(base_match)
 

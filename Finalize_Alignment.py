@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import pymongo
 import gridfs
 import subprocess
@@ -11,14 +13,14 @@ import os
 from time import sleep
 import tempfile
 import copy
-from Get_Alignment import match_criterias, parse_sxdefectalign
+from Get_Alignment import match_criterias, parse_sxdefectalign, base_match
 
 
 db, fs, client = AddDB.load_db()
 for match_criteria in match_criterias:
 
-    base_match = copy.deepcopy(match_criteria)
-    base_match['defect'] = {'$exists' : False}
+    # base_match = copy.deepcopy(match_criteria)
+    # base_match['defect'] = {'$exists' : False}
     print(base_match)
     base = Database_Tools.get_one(db, base_match)
     base_locpot = Database_Tools.get_file(fs, base['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(base['poscar']))

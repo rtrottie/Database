@@ -14,14 +14,14 @@ import os
 from time import sleep
 import tempfile
 import copy
-from Get_Alignment import match_criterias, parse_sxdefectalign
+from Get_Alignment import match_criterias, parse_sxdefectalign, base_match
 
 
 db, fs, client = AddDB.load_db()
 for match_criteria in match_criterias:
 
-    base_match = copy.deepcopy(match_criteria)
-    base_match['defect'] = {'$exists' : False}
+    # base_match = copy.deepcopy(match_criteria)
+    # base_match['defect'] = {'$exists' : False}
     print(base_match)
 
 
