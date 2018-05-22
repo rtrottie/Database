@@ -90,12 +90,15 @@ def entry_exists(database, info):
     else:
         id = ''
 
+    if 'incar' in info:
+        for item in info['incar']:
+            if item not in ['SYSTEM']:
+                info['incar.{}'.format(item)] = info['incar'][item]
     # Remove POSCAR, INCAR, and KPOINTS which do not match correctly
-    for item in ['poscar', 'kpoints']:
+    for item in ['poscar', 'kpoints', 'incar']:
         if item in info:
             info[item] = {'$exists' : True}
 
-    # print(info)
     r = list(database.find(info))
     if len(r) > 1:
         print(info)
@@ -465,7 +468,6 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
         print('Identical Entry Exists')
         client.close()
         return False
-
     # Prepare Files to be added to DB
     info['files'] = []
     # print(files)
