@@ -12,14 +12,14 @@ import database_cfg
 import tempfile
 
 def fix_locpot(base_locpot, poscar):
-    with open(base_locpot, 'rb') as f:
+    with open(base_locpot, 'r') as f:
         lines = f.readlines()
         lines[0] = ' '.join(poscar.site_symbols) + '\n'
         try:
             [int(x) for x in lines[5].split()]  # check if line is filled with ints
         except:
             lines.pop(5)
-    with open(base_locpot, 'wb') as f:
+    with open(base_locpot, 'w') as f:
         f.writelines(lines)
     return base_locpot
 
@@ -163,6 +163,6 @@ def get_file(fs, oid, fix_as='', fix_args=None):
         os.remove(compressed_file)
     except:
         new_file = compressed_file
-    # if fix_as.upper() == 'LOCPOT':
-    #     fix_locpot(new_file, fix_args)
+    if fix_as.upper() == 'LOCPOT':
+        fix_locpot(new_file, fix_args)
     return new_file

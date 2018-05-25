@@ -13,6 +13,7 @@ import os
 from time import sleep
 import tempfile
 import copy
+import shutil
 
 def parse_vline(vline):
     potential = {
@@ -36,6 +37,7 @@ def parse_vline(vline):
             elif len(line) == 3:  # Long range potential section
                 potential['V']['reference'].append(float(line[1]))
                 potential['V']['short_range'].append(float(line[2]))
+    print(potential)
     return potential
 
 def parse_sxdefectalign(lines):
@@ -69,7 +71,7 @@ match_criterias = [
                   'labels' : {'$nin' : ['ts', 'surface'], '$in' : ['charged_defect']},
                   'defect_type' : {'$exists' : True},
                 'adsorption_description': {'$exists': False},
-        'poscar.structure.sites.100' : {'$exists' : True},
+        'poscar.structure.sites.100' : {'$exists' : False},
                  }
 ]
 base_match = {'material' : 'hercynite',
@@ -79,7 +81,7 @@ base_match = {'material' : 'hercynite',
                   'defect_type' : {'$exists' : False},
                 'adsorption_description': {'$exists': False},
                   'files' : {'$all' : ['locpot']},
-        'poscar.structure.sites.100' : {'$exists' : True},
+        'poscar.structure.sites.100' : {'$exists' : False},
                  }
 if __name__ == '__main__':
     db, fs, client = AddDB.load_db()
@@ -91,12 +93,14 @@ if __name__ == '__main__':
         base = Database_Tools.get_one(db, base_match)
         runs = list(db.database.find(match_criteria).sort('defect', pymongo.ASCENDING))
         base_locpot = Database_Tools.get_file(fs, base['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(base['poscar']))
+        shutil.copy(base_locpot, 'LOCPOT.base')
         tmp_dir = tempfile.TemporaryDirectory().name
         os.mkdir(tmp_dir)
 
         for run in runs:
             print(str(run['defect']) + ' ' + str(run['defect_charge']))
             locpot = Database_Tools.get_file(fs, run['locpot'], fix_as='LOCPOT', fix_args=Poscar.from_dict(run['poscar']))
+            shutil.copy(locpot, 'LOCPOT.defect')
             # avg = np.array(0)
             vline_energies = []
             vline_z = []
