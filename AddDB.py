@@ -95,7 +95,7 @@ def entry_exists(database, info):
             if item not in ['SYSTEM']:
                 info['incar.{}'.format(item)] = info['incar'][item]
     # Remove POSCAR, INCAR, and KPOINTS which do not match correctly
-    for item in ['poscar', 'kpoints', 'incar']:
+    for item in ['poscar', 'kpoints', 'incar', 'poscars']:
         if item in info:
             info[item] = {'$exists' : True}
 
@@ -393,6 +393,75 @@ def add_kpoints_convergence(collection, material, directory, other_info, other_f
                                     other_info_function=other_info_function, other_info=other_info, other_files=other_files,
                                     check_convergence=True)
 
+def add_interpolation(collection, material, directory, incar, kpoints, potcar, vasprun, other_info={}, other_files=[],
+                  force=False, check_convergence=True, ignore_unconverged=False):
+
+    potcar = Potcar.from_file(potcar)
+    incar = Incar.from_file(incar)
+    kpoints = Kpoints.from_file(kpoints)
+    files = other_files
+
+    dirs = [x for x in os.listdir(directory) if os.path.isdir(x) and 'backup' not in x]
+    dirs.sort()
+    poscars  = [Poscar.from_file(os.path.join(directory, dir, 'POSCAR')).as_dict() for dir in dirs]
+    energies = []
+    for dir in dirs:
+        with open(os.path.join(dir, 'energy.txt')) as f:
+            energies.append(float(f.read().split()[0]))
+
+    info = {
+        'material': material,
+        'elements': poscar.site_symbols,
+        'potcar': potcar.symbols,
+        'potcar_functional': potcar.functional,
+        'dirs' : dirs,
+        'poscars' : poscars,
+        'energies' : energies
+    }
+
+    info['incar'] = incar  # Incar is already a dict
+    info['poscar'] = poscar.as_dict()
+    info['kpoints'] = kpoints.as_dict()
+
+
+    # Check for convergence
+    delta = 0.01
+    max_e = max(energies)
+    max_i = energies.index(max_e)
+    convergedP = (max_e - energies[max_i-1] < delta if max_i > 0 else True) and (max_e - energies[max_i+1] < delta if max_i < len(energies)-1 else True)
+    if not convergedP and check_convergence:
+        if ignore_unconverged:
+            print('Not Adding Unconverged Run')
+            return
+        continueP = input('Run is not Converged.  Add Anyway? (y/n)\n --> ')
+        if continueP == 'y' or continueP == 'yes':
+            pass
+        else:
+            print('Did not Select y/yes to add')
+            return
+
+    # Open up DB connection and check if entry exists, close if entry does exist
+    (db, fs, client) = load_db()
+    collection = db[collection]
+    if entry_exists(collection, info) and not force:
+        print('Identical Entry Exists')
+        client.close()
+        return False
+    # Prepare Files to be added to DB
+    info['files'] = []
+    # print(files)
+    for (filename, filepath) in files:
+        if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+            fileID = add_file(fs, filepath, filename)
+            info[filename] = fileID
+            info['files'].append(filename)
+        else:
+            info[filename] = 'none'
+    result = collection.insert_one(info)
+    print('Added')
+    client.close()
+    return result
+
 def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True, ignore_unconverged=False):
     '''
     Adds a VASP run to the database.  All input/output files must be provided in the arguments.
@@ -548,6 +617,8 @@ if __name__ == '__main__':
                         type=str, default=None)
     parser.add_argument('-c', '--charged_defect', help='Specifies this is a Charged Defect run both this flag and label must be set',
                         action='store_true')
+    parser.add_argument('-c', '--interpolation', help='Specifies this is a interpolation run both this flag and label must be set',
+                        action='store_true')
     parser.add_argument('--fn', '--force-nupdown', help='Force adding all NUPDOWN',
                         action='store_true')
     parser.add_argument('--mep', '--minimum-energy-pathway', help='add MEP run',
@@ -599,10 +670,17 @@ if __name__ == '__main__':
 
     if args.nupdown and 'convergence_type' in tags and tags['convergence_type'][0] == 'nupdown':
         add_nupdown_convergence('database', material, os.path.abspath('.'), tags, other_files=other_files)
+
     elif args.charged_defect and 'charged_defect' in tags['labels']:
         add_charged_defect('database', material, os.path.abspath('.'), tags, other_files=other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged)
     elif args.charged_defect != 'charged_defect' in tags['labels']: # one or the other is established
         raise Exception('charged_defect must be specified twice')
+
+    elif args.charged_defect and 'charged_defect' in tags['labels']:
+        add_interpolation('database', material, os.path.abspath('.'), tags, other_files=other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged)
+    elif args.interpolation != 'interpolation' in tags['labels']: # one or the other is established
+        raise Exception('charged_defect must be specified twice')
+
     elif args.nupdown != ('convergence_type' in tags and tags['convergence_type'][0] == 'nupdown'):
         raise Exception('must specify -n flag and correctly label DATABASE file')
     # elif os.path.exists('INCAR') and 'ICHAIN' in Incar.from_file('INCAR') and Incar.from_file('INCAR')['ICHAIN'] == 2:

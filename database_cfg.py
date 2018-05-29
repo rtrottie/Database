@@ -8,6 +8,7 @@ bader_files = [('bader_acf', 'ACF.dat'),         ('bader_bcf', 'BCF.dat'),      
 compressed_files = ['LOCPOT', 'CHG', 'CHGCAR', 'VASPRUN', 'OUTCAR', 'DOSCAR', 'PROCAR']
 
 database_spec = {'ts'           : {'ts_type' : None, 'job_type' : 'ts', 'files' : bader_files},
+                 'interpolation': {'job_type' : 'interpolation', 'interpolation_direction' : None, 'files' : bader_files},
                  'relaxation'   : {'job_type' : 'relaxation', 'files' : bader_files},
                  'convergence_study'  : {'job_type' : 'convergence', 'convergence_type' : None},
                  'dos'          : {'job_type' : 'dos', 'files' : [('procar', 'PROCAR'), ('doscar', 'DOSCAR')] + bader_files},

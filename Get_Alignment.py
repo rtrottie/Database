@@ -37,7 +37,7 @@ def parse_vline(vline):
             elif len(line) == 3:  # Long range potential section
                 potential['V']['reference'].append(float(line[1]))
                 potential['V']['short_range'].append(float(line[2]))
-    print(potential)
+    # print(potential)
     return potential
 
 def parse_sxdefectalign(lines):
@@ -66,12 +66,12 @@ except NameError: pass
 #
 match_criterias = [
 {'material' : 'hercynite',
-                  'job_type' : 'relaxation',
+                  'job_type' : 'ts',
                   'energy' : {'$exists' : True},
-                  'labels' : {'$nin' : ['ts', 'surface'], '$in' : ['charged_defect']},
+                  'labels' : {'$nin' : ['surface'], '$all' : ['charged_defect', 'ts']},
                   'defect_type' : {'$exists' : True},
                 'adsorption_description': {'$exists': False},
-        'poscar.structure.sites.100' : {'$exists' : False},
+        'poscar.structure.sites.100' : {'$exists' : True},
                  }
 ]
 base_match = {'material' : 'hercynite',
@@ -81,7 +81,7 @@ base_match = {'material' : 'hercynite',
                   'defect_type' : {'$exists' : False},
                 'adsorption_description': {'$exists': False},
                   'files' : {'$all' : ['locpot']},
-        'poscar.structure.sites.100' : {'$exists' : False},
+        'poscar.structure.sites.100' : {'$exists' : True},
                  }
 if __name__ == '__main__':
     db, fs, client = AddDB.load_db()
