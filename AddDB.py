@@ -393,7 +393,7 @@ def add_kpoints_convergence(collection, material, directory, other_info, other_f
                                     other_info_function=other_info_function, other_info=other_info, other_files=other_files,
                                     check_convergence=True)
 
-def add_interpolation(collection, material, directory, incar, kpoints, potcar, vasprun, other_info={}, other_files=[],
+def add_interpolation(collection, material, directory, incar, kpoints, potcar, other_info={}, other_files=[],
                   force=False, check_convergence=True, ignore_unconverged=False):
 
     potcar = Potcar.from_file(potcar)
@@ -677,7 +677,7 @@ if __name__ == '__main__':
         raise Exception('charged_defect must be specified twice')
 
     elif args.interpolation and 'interpolation' in tags['labels']:
-        add_interpolation('database', material, os.path.abspath('.'), tags, other_files=other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged)
+        add_interpolation('database', material, os.path.abspath('.'),'INCAR', 'KPOINTS', 'POTCAR', other_info=tags, other_files=other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged)
     elif args.interpolation != 'interpolation' in tags['labels']: # one or the other is established
         raise Exception('interpolation must be specified twice')
 
