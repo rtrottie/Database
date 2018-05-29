@@ -419,7 +419,6 @@ def add_interpolation(collection, material, directory, incar, kpoints, potcar, o
     }
 
     info['incar'] = incar  # Incar is already a dict
-    info['poscar'] = poscar.as_dict()
     info['kpoints'] = kpoints.as_dict()
 
 
