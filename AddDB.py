@@ -411,7 +411,6 @@ def add_interpolation(collection, material, directory, incar, kpoints, potcar, o
 
     info = {
         'material': material,
-        'elements': poscar.site_symbols,
         'potcar': potcar.symbols,
         'potcar_functional': potcar.functional,
         'dirs' : dirs,
