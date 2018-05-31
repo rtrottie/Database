@@ -10,6 +10,7 @@ from bson import ObjectId
 import fnmatch
 import os
 import copy
+from Helpers import isint
 import subprocess
 import File_Management
 import sys
@@ -401,7 +402,7 @@ def add_interpolation(collection, material, directory, incar, kpoints, potcar, o
     kpoints = Kpoints.from_file(kpoints)
     files = other_files
 
-    dirs = [x for x in os.listdir(directory) if os.path.isdir(x) and 'backup' not in x]
+    dirs = [x for x in os.listdir(directory) if os.path.isdir(x) and isint(x)]
     dirs.sort()
     poscars  = [Poscar.from_file(os.path.join(directory, dir, 'POSCAR')).as_dict() for dir in dirs]
     energies = []
@@ -428,7 +429,7 @@ def add_interpolation(collection, material, directory, incar, kpoints, potcar, o
     delta = 0.01
     max_e = max(energies)
     max_i = energies.index(max_e)
-    convergedP = (max_e - energies[max_i-1] < delta if max_i > 0 else True) and (max_e - energies[max_i+1] < delta if max_i < len(energies)-1 else True)
+    convergedP = (max_e - energies[max_i-1] <= delta if max_i > 0 else True) and (max_e - energies[max_i+1] <= delta if max_i < len(energies)-1 else True)
     if not convergedP and check_convergence:
         if ignore_unconverged:
             print('Not Adding Unconverged Run')
