@@ -135,7 +135,7 @@ def compress(filename):
     print('Compressed')
     return temp
 
-def get_file(fs, oid, fix_as='', fix_args=None):
+def get_file(fs, oid, fix_as='', fix_args=None, new_file=None):
     '''
     Get the file specified by oid from the specified filesystem fs.  Performs maintenace as specified by the fix_as
     setting
@@ -152,7 +152,8 @@ def get_file(fs, oid, fix_as='', fix_args=None):
     :rtype: str
     '''
     compressed_file = tempfile.NamedTemporaryFile(delete=False).name
-    new_file = tempfile.NamedTemporaryFile(delete=False).name
+    if not new_file:
+        new_file = tempfile.NamedTemporaryFile(delete=False).name
     with fs.get(oid) as f:
         with open(compressed_file, 'wb') as temp:
             temp.write(f.read())
