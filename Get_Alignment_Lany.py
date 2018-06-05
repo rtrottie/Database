@@ -46,16 +46,47 @@ def parse_vline(vline):
 
 try: input = raw_input
 except NameError: pass
-match_criterias = [
+match_criterias_functional = [
 {
-    'material' : {'$all': ['mnte', 'zincblende']},
-    'antiferromagnetic_label' : 'afiii',
     'locpot' : {'$exists' : True},
     'defect' : {'$nin' : [],
                 '$exists' : True},
     'incar.METAGGA' : 'Scan'
-}
+},
+
+{
+    'material' : {'$all': ['mnte', 'nickeline']},
+    'antiferromagnetic_label' : 'afi',
+    'locpot' : {'$exists' : True},
+    'defect' : {'$nin' : [],
+                '$exists' : True},
+'incar.LHFCALC' : True
+},
+{
+    'material' : {'$all': ['mnte', 'nickeline']},
+    'antiferromagnetic_label' : 'afi',
+    'locpot' : {'$exists' : True},
+    'defect' : {'$nin' : [],
+                '$exists' : True},
+'incar.LDAU' : True
+},
     ]
+
+match_criterias_material = [
+    ('nickeline' , 'afi'),
+    ('wurtzite', 'afiii'),
+    ('wurtzite', 'afiv'),
+    ('zincblende', 'afi'),
+    ('zincblende', 'afiii')
+]
+match_criterias = []
+for match_criteria_functional in match_criterias_functional:
+    for material, spin in match_criterias_material:
+        match_criteria = copy.deepcopy(match_criteria_functional)
+        match_criteria['material'] = {'$all': ['mnte', material]}
+        match_criteria['antiferromagnetic_label'] = spin
+        match_criterias.append(match_criteria)
+
 
 if __name__ == '__main__':
     db, fs, client = AddDB.load_db()
@@ -116,6 +147,7 @@ if __name__ == '__main__':
 
         for run in runs:
             print(str(run['defect']) + ' ' + str(run['defect_charge']))
+            charge = run['defect_charge']
             defect_poscar = Poscar.from_dict(run['poscar'])
             defect_poscar.write_file('POSCAR')
             Database_Tools.get_file(fs, run['outcar'], fix_as='outcar', new_file='OUTCAR')
@@ -138,6 +170,12 @@ if __name__ == '__main__':
             potential_alignment = float(output.split()[0])
             print(potential_alignment)
 
+            tewen = -base['ewald_h']
+            csh = E_3 / tewen
+            correction = {'potential_alignment' : potential_alignment,
+                          'E_ic' : (1 + csh*(1-1/eps))*charge**2*tewen/eps}
+            db.database.update_one({'_id': run['_id']},
+                                   {'$set': {'correction_lany': correction}})
             continue
             raise Exception('Not Implemented')
             # avg = np.array(0)
