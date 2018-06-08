@@ -64,28 +64,53 @@ except NameError: pass
 #     'incar.METAGGA' : 'Scan'
 # }
 #
-match_criterias = [
-{'material' : 'hercynite',
-                  'job_type' : 'ts',
-                  'energy' : {'$exists' : True},
-                  'labels' : {'$nin' : ['surface'], '$all' : ['charged_defect', 'ts']},
-                  'defect_type' : {'$exists' : True},
-                'adsorption_description': {'$exists': False},
-        'poscar.structure.sites.100' : {'$exists' : True},
-                 }
+match_criterias_functional = [
+{
+    'locpot' : {'$exists' : True},
+    'defect' : {'$nin' : [],
+                '$exists' : True},
+    'incar.METAGGA' : 'Scan'
+},
+
+# {
+#     'material' : {'$all': ['mnte', 'nickeline']},
+#     'antiferromagnetic_label' : 'afi',
+#     'locpot' : {'$exists' : True},
+#     'defect' : {'$nin' : [],
+#                 '$exists' : True},
+# 'incar.LHFCALC' : True
+# },
+{
+    'material' : {'$all': ['mnte', 'nickeline']},
+    'antiferromagnetic_label' : 'afi',
+    'locpot' : {'$exists' : True},
+    'defect' : {'$nin' : [],
+                '$exists' : True},
+'incar.LDAU' : True
+},
+    ]
+
+match_criterias_material = [
+    ('nickeline' , 'afi'),
+    ('wurtzite', 'afiii'),
+    ('wurtzite', 'afiv'),
+    # ('zincblende', 'afi'),
+    # ('zincblende', 'afiii')
 ]
-base_match = {'material' : 'hercynite',
-                  'job_type' : 'relaxation',
-                  'energy' : {'$exists' : True},
-                  'labels' : {'$nin' : ['ts', 'surface', 'charged_defect']},
-                  'defect_type' : {'$exists' : False},
-                'adsorption_description': {'$exists': False},
-                  'files' : {'$all' : ['locpot']},
-        'poscar.structure.sites.100' : {'$exists' : True},
-                 }
+match_criterias = []
+for match_criteria_functional in match_criterias_functional:
+    for material, spin in match_criterias_material:
+        match_criteria = copy.deepcopy(match_criteria_functional)
+        match_criteria['material'] = {'$all': ['mnte', material]}
+        match_criteria['antiferromagnetic_label'] = spin
+        match_criterias.append(match_criteria)
+
+
 if __name__ == '__main__':
     db, fs, client = AddDB.load_db()
     for match_criteria in match_criterias:
+        base_match = copy.deepcopy(match_criteria)
+        base_match['defect'] = {'$exists' : False}
 
         print(base_match)
 
@@ -111,7 +136,7 @@ if __name__ == '__main__':
                        '--vdef', locpot,
                        '--ecut', str(run['incar']['ENCUT']*0.073498618),
                        '--center', ','.join(run['defect_center']), '--relative',
-                       '--eps', str(base['dielectric_constant']),
+                       '--eps', str(np.mean([base['eps_electronic_tddft'], base['eps_electronic_ip']]) + base['eps_ionic']),
                        '-q', str(-run['defect_charge'])]
             process = subprocess.Popen(command, stdout=subprocess.PIPE)
             process.wait()

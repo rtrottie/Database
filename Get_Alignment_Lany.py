@@ -100,7 +100,7 @@ if __name__ == '__main__':
         base_poscar.write_file('POSCAR')
         Database_Tools.get_file(fs, base['outcar'], fix_as='outcar', new_file='OUTCAR')
 
-        eps = base['dielectric_constant']
+        eps = np.mean([base['eps_electronic_tddft'], base['eps_electronic_ip']]) + base['eps_ionic']
 
         # Third Order Correction
         command=['3rdO']
