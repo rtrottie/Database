@@ -87,12 +87,30 @@ for match_criteria_functional in match_criterias_functional:
         match_criteria['antiferromagnetic_label'] = spin
         match_criterias.append(match_criteria)
 
+match_criterias = [
+{
+    'material' : 'hercynite',
+    'defect' : {'$exists' : True},
+#     'jobtype' : 'relaxation',
+    'labels' : {'$nin' : ['surface', 'convergence_study', 'ts'], '$all' : ['charged_defect']},
+    'poscar.structure.sites.100' : {'$exists' : True},
+    'defect_charge' : 0,
+}
+]
 
 if __name__ == '__main__':
     db, fs, client = AddDB.load_db()
     for match_criteria in match_criterias:
         base_match = copy.deepcopy(match_criteria)
         base_match['defect'] = {'$exists' : False}
+        base_match = {
+    'material' : 'hercynite',
+    'defect' : {'$exists' : False},
+#     'jobtype' : 'relaxation',
+    'labels' : {'$nin' : ['surface', 'convergence_study', 'ts']},
+    'poscar.structure.sites.100' : {'$exists' : True},
+    'locpot' : {'$exists' : True}
+}
         print(base_match)
         base = Database_Tools.get_one(db, base_match)
 
@@ -100,7 +118,7 @@ if __name__ == '__main__':
         base_poscar.write_file('POSCAR')
         Database_Tools.get_file(fs, base['outcar'], fix_as='outcar', new_file='OUTCAR')
 
-        eps = np.mean([base['eps_electronic_tddft'], base['eps_electronic_ip']]) + base['eps_ionic']
+        eps = base['eps_electronic'] + base['eps_ionic']
 
         # Third Order Correction
         command=['3rdO']
