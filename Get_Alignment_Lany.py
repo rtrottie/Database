@@ -88,14 +88,14 @@ for match_criteria_functional in match_criterias_functional:
         match_criterias.append(match_criteria)
 
 match_criterias = [
-{
-    'material' : 'hercynite',
-    'defect' : {'$exists' : True},
-#     'jobtype' : 'relaxation',
-    'labels' : {'$nin' : ['surface', 'convergence_study', 'ts'], '$all' : ['charged_defect']},
-    'poscar.structure.sites.100' : {'$exists' : True},
-    'defect_charge' : 0,
-}
+{'material' : 'hercynite',
+                  'job_type' : 'ts',
+                  'energy' : {'$exists' : True},
+                  'labels' : {'$nin' : ['surface'], '$all' : ['charged_defect', 'ts']},
+                  'defect_type' : {'$exists' : True},
+                'adsorption_description': {'$exists': False},
+        'poscar.structure.sites.100' : {'$exists' : True},
+                 }
 ]
 
 if __name__ == '__main__':
@@ -188,30 +188,12 @@ if __name__ == '__main__':
             potential_alignment = float(output.split()[0])
             print(potential_alignment)
 
-            tewen = -base['ewald_h']
+            tewen = base['ewald_h']
             csh = E_3 / tewen
             correction = {'potential_alignment' : potential_alignment,
                           'E_ic' : (1 + csh*(1-1/eps))*charge**2*tewen/eps}
             db.database.update_one({'_id': run['_id']},
                                    {'$set': {'correction_lany': correction}})
             continue
-            raise Exception('Not Implemented')
-            # avg = np.array(0)
-            command = ['', '--vasp',
-                       '--average', '5',
-                       # '-a' + str(i+1),
-                       '--vref', base_locpot,
-                       '--vdef', locpot,
-                       '--ecut', str(run['incar']['ENCUT']*0.073498618),
-                       '--center', ','.join(run['defect_center']), '--relative',
-                       '--eps', str(base['dielectric_constant']),
-                       '-q', str(-run['defect_charge'])]
-            process = subprocess.Popen(command, stdout=subprocess.PIPE)
-            process.wait()
-            output = process.stdout.readlines()
-
-            db.database.update_one({'_id' : run['_id']},
-                                   {'$set': {'alignment_lany' : alignment}})
-            os.remove(locpot)
 
         client.close()
