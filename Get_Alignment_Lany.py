@@ -89,10 +89,10 @@ for match_criteria_functional in match_criterias_functional:
 
 match_criterias = [
 {'material' : 'hercynite',
-                  'job_type' : 'ts',
+                  # 'job_type' : 'relaxation',
                   'energy' : {'$exists' : True},
-                  'labels' : {'$nin' : ['surface'], '$all' : ['charged_defect', 'ts']},
-                  'defect_type' : {'$exists' : True},
+                  'labels' : {'$nin' : ['surface'], '$all' : ['charged_defect']},
+                    'defect' : 'o-int',
                 'adsorption_description': {'$exists': False},
         'poscar.structure.sites.100' : {'$exists' : True},
                  }
@@ -162,7 +162,7 @@ if __name__ == '__main__':
 
 
         runs = list(db.database.find(match_criteria).sort('defect', pymongo.ASCENDING))
-
+        print(len(runs))
         for run in runs:
             print(str(run['defect']) + ' ' + str(run['defect_charge']))
             charge = run['defect_charge']
