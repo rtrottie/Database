@@ -630,6 +630,8 @@ if __name__ == '__main__':
                         action='store_true')
     parser.add_argument('--neb', help='add NEB run',
                         action='store_true')
+    parser.add_argument('--pc', help='add Plane Constrained run',
+                        action='store_true')
     args = parser.parse_args()
 
     # Find and Parse Database Files
@@ -669,7 +671,7 @@ if __name__ == '__main__':
         else:
             raise Exception('Must say either y or n')
 
-    if 'ts_type' in tags and ('pc' in tags['ts_type'] or 'plane_constrained' in tags['ts_type']):
+    if 'ts_type' in tags and ('pc' in tags['ts_type'] or 'plane_constrained' in tags['ts_type']) and args.pc:
         files = [x for x in os.listdir() if '.e' in x]
         files.sort()
         with open(files[-1]) as f:
@@ -681,6 +683,8 @@ if __name__ == '__main__':
                     pass
                 else:
                     raise Exception('Did not Select y/yes to add')
+    elif ('ts_type' in tags and ('pc' in tags['ts_type'] or 'plane_constrained' in tags['ts_type'])) or args.pc:
+        raise Exception('pc must be specified twice')
 
     if args.nupdown and 'convergence_type' in tags and tags['convergence_type'][0] == 'nupdown':
         add_nupdown_convergence('database', material, os.path.abspath('.'), tags, other_files=other_files)
