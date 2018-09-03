@@ -632,6 +632,8 @@ if __name__ == '__main__':
                         action='store_true')
     parser.add_argument('--pc', help='add Plane Constrained run',
                         action='store_true')
+    parser.add_argument('--prompt_material', help='if material isn\'t specified, prompt',
+                        action='store_true')
     args = parser.parse_args()
 
     # Find and Parse Database Files
@@ -653,7 +655,10 @@ if __name__ == '__main__':
     elif 'material' in tags:
         material = tags.pop('material')
     else:
-        material = input('Name(s) of Material?\n--> ').strip().split()
+        if args.prompt_material:
+            material = input('Name(s) of Material?\n--> ').strip().split()
+        else:
+            raise Exception('Material not Specified')
 
     print(tags)
     print(other_files)
