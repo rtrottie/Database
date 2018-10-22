@@ -85,7 +85,7 @@ def get_lowest_spin(db, match_criteria, updates={}):
             display.update({'NUPDOWN': nup})
             print('Too Many Matches for :' + str(display))
 
-def get_lowest_spin(db, match_criteria, updates={}):
+def get_lowest_spin(db, match_criteria, updates={}, number=1):
     '''
 
     :param db: Collection
@@ -102,13 +102,13 @@ def get_lowest_spin(db, match_criteria, updates={}):
         match_criteria.update(update)
     matches = list(db.database.find(match_criteria).sort([("energy", pymongo.ASCENDING)]))
 
-    if len(matches) == 1:
-        return matches[0]
-    elif len(matches) == 0:
+    # if len(matches) == number:
+    #     return matches[number-1]
+    if len(matches) < number:
         return None
     else:
         try:
-            nup = matches[0]['incar']['NUPDOWN']
+            nup = matches[number-1]['incar']['NUPDOWN']
         except:
             nup = {'$exists' : False}
         count = 0
@@ -123,7 +123,7 @@ def get_lowest_spin(db, match_criteria, updates={}):
             display = match_criteria.copy()
             display.update({'NUPDOWN': nup})
             print('Too Many Matches for :' + str(display))
-        return matches[0]
+        return matches[number-1]
 
 def compress(filename):
     temp = tempfile.NamedTemporaryFile(delete=False).name
