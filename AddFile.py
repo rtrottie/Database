@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import os
-from AddDB import analyze_DATABASE_file, load_db
+from AddDB import analyze_DATABASE_file, load_db, add_file
 from pymatgen.io.vasp import Incar
 import argparse
+
 
 
 if __name__ == '__main__':
@@ -34,7 +35,11 @@ if __name__ == '__main__':
         if len(matches) == 0:
             raise Exception('No Matches')
         elif len(matches) == 1:
-            print('Update it Fools')
-
+            if args.FILE in tags:
+                ip = input('provided FILE exists.  Overwrite? (y/n)')
+                if ip != 'y':
+                    raise Exception('Input Provided != \'y\' Quitting')
+            f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
+            db.database.update_one({'_id': matches[0]['_id']}, {'$set': {args.FILE : f}})
 
 
