@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 from AddDB import analyze_DATABASE_file, load_db
 from pymatgen.io.vasp import Incar
