@@ -82,8 +82,9 @@ def get_lowest_spin(db, match_criteria, updates={}):
                 count += 1
         if count > 1:
             display = match_criteria.copy()
-            display.update({'NUPDOWN': nup})
-            print('Too Many Matches for :' + str(display))
+            # display.update({'NUPDOWN': nup})
+            print('Too Many Matches for : {}'.format(display))
+            print('                       NUPDOWN : {}'.format(nup))
 
 def get_lowest_spin(db, match_criteria, updates={}, number=1):
     '''
@@ -121,8 +122,9 @@ def get_lowest_spin(db, match_criteria, updates={}, number=1):
                 count += 1
         if count > 1:
             display = match_criteria.copy()
-            display.update({'NUPDOWN': nup})
-            print('Too Many Matches for :' + str(display))
+            display.update({'incar.NUPDOWN': nup})
+            print('Too Many Matches for : {}'.format(display))
+            # print('                       NUPDOWN : {}'.format(nup))
         return matches[number-1]
 
 def compress(filename):

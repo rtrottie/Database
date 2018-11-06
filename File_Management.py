@@ -1,5 +1,5 @@
 
-def file_to_dict(acf, labels=None):
+def file_to_dict(acf, labels=None, start=0, end=None):
     '''
     Turn a file into a dictionary with labels corresponding to the keys.  if labels=None, use first line of the file
     :param acf: str
@@ -8,7 +8,7 @@ def file_to_dict(acf, labels=None):
     '''
 
     # Parse lines and setup labels if not provided
-    lines = acf.split(b'\n')
+    lines = acf.split(b'\n')[start:end]
     if not labels:
         labels = lines[0].split()
         lines = lines[1:]
