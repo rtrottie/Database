@@ -39,8 +39,8 @@ if __name__ == '__main__':
                 ip = input('provided FILE exists.  Overwrite? (y/n)')
                 if ip != 'y':
                     raise Exception('Input Provided != \'y\' Quitting')
-            args.FILE = args.FILE.replace('.', '_')
+            tag = args.FILE.replace('.', '_')
             f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
-            db.database.update_one({'_id': matches[0]['_id']}, {'$set': {args.FILE : f}})
+            db.database.update_one({'_id': matches[0]['_id']}, {'$set': {tag : f}})
 
 
