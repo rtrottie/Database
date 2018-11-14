@@ -42,5 +42,7 @@ if __name__ == '__main__':
                     raise Exception('Input Provided != \'y\' Quitting')
             f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
             db.database.update_one({'_id': matches[0]['_id']}, {'$set': {tag : f}})
+        else:
+            print('Too Many matches : {}'.format([ x.keys() for x in matches ]))
 
 
