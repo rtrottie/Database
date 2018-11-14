@@ -28,6 +28,7 @@ if __name__ == '__main__':
                     print('Found DATABASE file in ' + os.path.abspath(database_file))
 
         (tags, other_files) = analyze_DATABASE_file(database_files)
+        tag = args.FILE.replace('.', '_')
         i = Incar.from_file('INCAR') #
         for key in i.keys():
             tags['incar.{}'.format(key)] = i[key]
@@ -35,11 +36,10 @@ if __name__ == '__main__':
         if len(matches) == 0:
             raise Exception('No Matches')
         elif len(matches) == 1:
-            if args.FILE in tags:
+            if tag in tags:
                 ip = input('provided FILE exists.  Overwrite? (y/n)')
                 if ip != 'y':
                     raise Exception('Input Provided != \'y\' Quitting')
-            tag = args.FILE.replace('.', '_')
             f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
             db.database.update_one({'_id': matches[0]['_id']}, {'$set': {tag : f}})
 
