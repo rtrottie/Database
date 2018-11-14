@@ -36,7 +36,7 @@ if __name__ == '__main__':
         if len(matches) == 0:
             raise Exception('No Matches')
         elif len(matches) == 1:
-            if tag in tags:
+            if tag in matches[0]:
                 ip = input('provided FILE exists.  Overwrite? (y/n)')
                 if ip != 'y':
                     raise Exception('Input Provided != \'y\' Quitting')
