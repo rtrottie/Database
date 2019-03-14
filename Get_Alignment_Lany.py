@@ -87,6 +87,17 @@ for match_criteria_functional in match_criterias_functional:
         match_criteria['antiferromagnetic_label'] = spin
         match_criterias.append(match_criteria)
 
+match_criteria =
+{'material' : {'$exists' : True},
+        'poscar.structure.lattice.a': {'$gt': l},
+        'labels': {'$nin': ['surface', 'ts', 'interpolation'], '$all' : ['charged_defect']},
+        'defect_location': 'start',
+        'material': material,
+        'misc_labels' : {'$nin' : ['kpts_div_2']},
+        'energy' : {'$exists' : True},
+  }
+
+
 match_criteria = {'material' : 'hercynite',
                   # 'job_type' : 'relaxation',
                   'energy' : {'$exists' : True},

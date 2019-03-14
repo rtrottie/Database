@@ -677,7 +677,7 @@ if __name__ == '__main__':
             raise Exception('Must say either y or n')
 
     if 'ts_type' in tags and ('pc' in tags['ts_type'] or 'plane_constrained' in tags['ts_type']) and args.pc:
-        files = [x for x in os.listdir() if '.e' in x]
+        files = [x for x in os.listdir() if ('.e' in x) or ('.o' in x)]
         files.sort()
         with open(files[-1]) as f:
             if 'Done' not in f.readlines()[-1] and args.cc:
