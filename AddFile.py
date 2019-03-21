@@ -5,8 +5,6 @@ from AddDB import analyze_DATABASE_file, load_db, add_file
 from pymatgen.io.vasp import Incar
 import argparse
 
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # How to Tag Data
@@ -43,6 +41,20 @@ if __name__ == '__main__':
             f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
             db.database.update_one({'_id': matches[0]['_id']}, {'$set': {tag : f}})
         else:
+            print('Too many matches, trying to match energy')
+            from Classes_Pymatgen import Vasprun
+            v = Vasprun('vasprun.xml')
+            tags['energy'] = v.final_energy
+            matches = list(db.database.find(tags))
+            if len(matches) == 1:
+                if tag in matches[0]:
+                    ip = input('provided FILE exists.  Overwrite? (y/n)')
+                    if ip != 'y':
+                        raise Exception('Input Provided != \'y\' Quitting')
+                f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
+                db.database.update_one({'_id': matches[0]['_id']}, {'$set': {tag : f}})
+                return
+
             print('Too Many matches : {}'.format([ x.keys() for x in matches ]))
 
 
