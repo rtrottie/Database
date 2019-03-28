@@ -209,7 +209,7 @@ def add_charged_defect(collection, material, directory, other_info, other_files=
         add_dir(collection, material, os.path.join(directory,dir), other_info, other_files + [('locpot', os.path.join(directory, dir, 'LOCPOT'))], check_convergence=check_convergence, ignore_unconverged=ignore_unconverged)
 
 def add_NEB(collection, material, directory, other_info={}, other_files=[]):
-    '''
+    """
 
     :param collection: str
         Name of Collection for Database
@@ -222,7 +222,7 @@ def add_NEB(collection, material, directory, other_info={}, other_files=[]):
     :param other_files:
         other_files that can be included, most files included here will be added from all image directories
     :return: pymongo.results.InsertOneResult
-    '''
+    """
 
     from pymatgen.analysis.transition_state import NEBAnalysis
 
@@ -341,7 +341,7 @@ def add_nupdown_convergence(collection, material, directory, other_info={}, othe
                      other_info=other_info, other_files=other_files, check_convergence=check_convergence)
 
 def add_multiple_convergence(collection, material, directories=['.'], suffixes=[''], other_info_function=None, other_info={}, other_files=[], check_convergence=True):
-    '''
+    """
 
     :param collection: str
         Name of Collection for Database
@@ -360,7 +360,7 @@ def add_multiple_convergence(collection, material, directories=['.'], suffixes=[
     :param check_convergence: bool
         Check for convergence (Default True).  If convergence is not found and this is True, do not add run to DB
     :return:
-    '''
+    """
     info = []
     for directory in directories:
         for suffix in suffixes:
@@ -464,7 +464,7 @@ def add_interpolation(collection, material, directory, incar, kpoints, potcar, o
     return result
 
 def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun, other_info={}, other_files=[], force=False, check_convergence=True, ignore_unconverged=False):
-    '''
+    """
     Adds a VASP run to the database.  All input/output files must be provided in the arguments.
 
     :param collection: str
@@ -492,7 +492,7 @@ def add_vasp_run(collection, material, incar, kpoints, potcar, contcar, vasprun,
     :param check_convergence: bool
         Check for convergence (Default True).  If convergence is not found and this is True, do not add run to DB
     :return: pymongo.results.InsertOneResult
-    '''
+    """
     # Convert input strings to pymatgen file types (where applicable)  sets up other files to be stored
     poscar = Poscar.from_file(contcar)
     potcar = Potcar.from_file(potcar)

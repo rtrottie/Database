@@ -1,11 +1,11 @@
 
 def file_to_dict(acf, labels=None, start=0, end=None):
-    '''
+    """
     Turn a file into a dictionary with labels corresponding to the keys.  if labels=None, use first line of the file
     :param acf: str
     :param labels: list
     :return: dict
-    '''
+    """
 
     # Parse lines and setup labels if not provided
     lines = acf.split(b'\n')[start:end]

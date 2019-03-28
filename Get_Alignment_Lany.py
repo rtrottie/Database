@@ -86,9 +86,8 @@ for match_criteria_functional in match_criterias_functional:
         match_criteria['material'] = {'$all': ['mnte', material]}
         match_criteria['antiferromagnetic_label'] = spin
         match_criterias.append(match_criteria)
-
-match_criteria =
-{'material' : {'$exists' : True},
+l = 7
+match_criteria ={'material' : {'$exists' : True},
         'poscar.structure.lattice.a': {'$gt': l},
         'labels': {'$nin': ['surface', 'ts', 'interpolation'], '$all' : ['charged_defect']},
         'defect_location': 'start',
@@ -174,10 +173,10 @@ def get_correction_from_run(db, fs, base, eps=None):
         pot[base_poscar.site_symbols[i]] = str(np.mean(atom_potentials[bot:top]))
     # print(pot)
     #         with open('potal.in', 'w') as f:
-    #             f.write('''{}
+    #             f.write("""{}
     # {}
     # {}
-    # {}'''.format(len(natoms), ' '.join(pot), ' '.join([str(x) for x in natoms]), deviation))
+    # {}""".format(len(natoms), ' '.join(pot), ' '.join([str(x) for x in natoms]), deviation))
 
 
     return eps, pot, E_3, v.efermi, atom_potentials
@@ -195,10 +194,10 @@ def set_correction_of_run(db, fs, run, base, eps, pot, E_3, efermi, tewen, debug
 
     if type(pot) == dict:
         with open('potal.in', 'w') as f:
-            f.write('''{}
+            f.write("""{}
         {}
         {}
-        {}'''.format(len(defect_natoms), ' '.join([pot[x] for x in defect_poscar.site_symbols]),
+        {}""".format(len(defect_natoms), ' '.join([pot[x] for x in defect_poscar.site_symbols]),
                      ' '.join([str(x) for x in defect_natoms]), deviation))
 
 

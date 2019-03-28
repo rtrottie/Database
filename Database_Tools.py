@@ -24,13 +24,13 @@ def fix_locpot(base_locpot, poscar):
     return base_locpot
 
 def get_one(db, match_criteria, update=None):
-    '''
+    """
 
     :param db: Collection
     :type match_criteria: dict
     :type update: dict
     :return:
-    '''
+    """
 
     if update:
         match_criteria = match_criteria.copy()
@@ -47,13 +47,13 @@ def get_one(db, match_criteria, update=None):
         return matches[0]
 
 def get_lowest_spin(db, match_criteria, updates={}):
-    '''
+    """
 
     :param db: Collection
     :type match_criteria: dict
     :type update: dict
     :return:
-    '''
+    """
     if type(updates) == type({}):
         updates = [updates]
     for update in updates:
@@ -87,13 +87,13 @@ def get_lowest_spin(db, match_criteria, updates={}):
             print('                       NUPDOWN : {}'.format(nup))
 
 def get_lowest_spin(db, match_criteria, updates={}, number=1):
-    '''
+    """
 
     :param db: Collection
     :type match_criteria: dict
     :type update: dict
     :return:
-    '''
+    """
     if type(updates) == type({}):
         updates = [updates]
     for update in updates:
@@ -138,7 +138,7 @@ def compress(filename):
     return temp
 
 def get_file(fs, oid, fix_as='', fix_args=None, new_file=None):
-    '''
+    """
     Get the file specified by oid from the specified filesystem fs.  Performs maintenace as specified by the fix_as
     setting
 
@@ -152,7 +152,7 @@ def get_file(fs, oid, fix_as='', fix_args=None, new_file=None):
     additional arguments required for fix
         LOCPOT  ->  requires poscar
     :rtype: str
-    '''
+    """
     compressed_file = tempfile.NamedTemporaryFile(delete=False).name
     if not new_file:
         new_file = tempfile.NamedTemporaryFile(delete=False).name
