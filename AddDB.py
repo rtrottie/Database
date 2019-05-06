@@ -693,6 +693,7 @@ if __name__ == '__main__':
 
     elif args.interpolation and 'interpolation' in tags['labels']:
         add_interpolation('database', material, os.path.abspath('.'),'INCAR', 'KPOINTS', 'POTCAR', other_info=tags, other_files=other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged)
+        exit()
     elif args.interpolation != 'interpolation' in tags['labels']: # one or the other is established
         raise Exception('interpolation must be specified twice')
 

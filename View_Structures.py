@@ -16,15 +16,18 @@ from AddDB import load_db
 # SCRATCH = '/home/ryan/scratch/scratch.cif'
 # os.environ['VESTA_DIR'] = '/home/ryan/programs/VESTA-x86_64'
 
-def view_multiple(runs):
+def view_multiple(runs, is_ase=False):
     structs = []
-    for run in runs:
-        p = Poscar.from_dict(run['poscar'])
-        filename = database_cfg.scrap()
-        p.write_file(filename)
-        with open(filename) as f:
-            structs.append(ase.io.read(f, format='vasp'))
-        os.remove(filename)
+    if not is_ase:
+        for run in runs:
+            p = Poscar.from_dict(run['poscar'])
+            filename = database_cfg.scrap()
+            p.write_file(filename)
+            with open(filename) as f:
+                structs.append(ase.io.read(f, format='vasp'))
+            os.remove(filename)
+    else:
+        structs = runs
     filename = database_cfg.scrap() + '.cif'
     ase.io.write(filename, structs)
     return Vis.view(filename)
