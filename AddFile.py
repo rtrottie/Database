@@ -16,6 +16,7 @@ if __name__ == '__main__':
                         default=-1, type=int)
     parser.add_argument('-i', '--ignore', help='INCAR tags to ignore', type=str, nargs='*', default=[])
     parser.add_argument('--ignore_incar', help='Only try to match based on DATABASE file', action='store_true')
+    parser.add_argument('--overwrite', help='Overwrite file without promping', action='store_true')
     args = parser.parse_args()
     (db, fs, client) = load_db()
 
