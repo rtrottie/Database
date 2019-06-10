@@ -39,8 +39,8 @@ if __name__ == '__main__':
             v = Vasprun('vasprun.xml')
             delta = 0.02
             tags['energy'] = {
-                '$gte' : v.final_energy - delta,
-                '$lte' : v.final_energy + delta,
+                '$gte': v.final_energy - delta,
+                '$lte': v.final_energy + delta,
             }
         matches = list(db.database.find(tags))
         if len(matches) == 0:
