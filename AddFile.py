@@ -35,6 +35,13 @@ if __name__ == '__main__':
             for key in i.keys():
                 if key not in args.ignore:
                     tags['incar.{}'.format(key)] = i[key]
+        else:
+            v = Vasprun('vasprun.xml')
+            delta = 0.02
+            tags['energy'] = {
+                '$gte' : v.final_energy - delta,
+                '$lte' : v.final_energy + delta,
+            }
         matches = list(db.database.find(tags))
         if len(matches) == 0:
             raise Exception('No Matches')
