@@ -14,6 +14,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-p', '--parent_dirs', help='Number of Parent Dirs to look for DATABASE files.  Will use all found, favoring closer files. (Default: None)',
                         default=-1, type=int)
+    parser.add_argument('-i', '--ignore', 'INCAR tags to ignore', type=str, nargs='*', default=[])
     args = parser.parse_args()
     (db, fs, client) = load_db()
 
@@ -30,7 +31,8 @@ if __name__ == '__main__':
         tag = args.FILE.replace('.', '_')
         i = Incar.from_file('INCAR') #
         for key in i.keys():
-            tags['incar.{}'.format(key)] = i[key]
+            if key not in args.ignore:
+                tags['incar.{}'.format(key)] = i[key]
         matches = list(db.database.find(tags))
         if len(matches) == 0:
             raise Exception('No Matches')
