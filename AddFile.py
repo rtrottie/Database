@@ -16,7 +16,9 @@ if __name__ == '__main__':
                         default=-1, type=int)
     parser.add_argument('-i', '--ignore', help='INCAR tags to ignore', type=str, nargs='*', default=[])
     parser.add_argument('--ignore_incar', help='Only try to match based on DATABASE file', action='store_true')
+    parser.add_argument('--delta', help='Don\'t need to match exact energies', default=0, type=float)
     parser.add_argument('--overwrite', help='Overwrite file without promping', action='store_true')
+    parser.add_argument('--add_to_all', help='If Multiple files are found, add file to all documents', action='store_true')
     args = parser.parse_args()
     (db, fs, client) = load_db()
 
@@ -38,10 +40,9 @@ if __name__ == '__main__':
                     tags['incar.{}'.format(key)] = i[key]
         else:
             v = Vasprun('vasprun.xml')
-            delta = 0.02
             tags['energy'] = {
-                '$gte': v.final_energy - delta,
-                '$lte': v.final_energy + delta,
+                '$gte': v.final_energy - args.delta,
+                '$lte': v.final_energy + args.delta,
             }
         matches = list(db.database.find(tags))
         if len(matches) == 0:
@@ -53,10 +54,17 @@ if __name__ == '__main__':
                     raise Exception('Input Provided != \'y\' Quitting')
             f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
             db.database.update_one({'_id': matches[0]['_id']}, {'$set': {tag : f}})
+        elif args.add_to_all:
+            for match in matches:
+                f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
+                db.database.update_one({'_id': match['_id']}, {'$set': {tag : f}})
         else:
             print('Too many matches, trying to match energy')
             v = Vasprun('vasprun.xml')
-            tags['energy'] = v.final_energy
+            tags['energy'] = {
+                '$gte': v.final_energy - args.delta,
+                '$lte': v.final_energy + args.delta,
+            }
             matches = list(db.database.find(tags))
             if len(matches) == 1:
                 if tag in matches[0]:
