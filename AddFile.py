@@ -56,6 +56,10 @@ if __name__ == '__main__':
             db.database.update_one({'_id': matches[0]['_id']}, {'$set': {tag : f}})
         elif args.add_to_all:
             for match in matches:
+                if tag in match[0]:
+                    ip = input('provided FILE exists.  Overwrite? (y/n)') if not args.overwrite else 'y'
+                    if ip != 'y':
+                        raise Exception('Input Provided != \'y\' Quitting')
                 f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
                 db.database.update_one({'_id': match['_id']}, {'$set': {tag : f}})
         else:
