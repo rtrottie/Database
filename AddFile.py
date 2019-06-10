@@ -48,7 +48,7 @@ if __name__ == '__main__':
             raise Exception('No Matches')
         elif len(matches) == 1:
             if tag in matches[0]:
-                ip = input('provided FILE exists.  Overwrite? (y/n)')
+                ip = input('provided FILE exists.  Overwrite? (y/n)') if not args.overwrite else 'y'
                 if ip != 'y':
                     raise Exception('Input Provided != \'y\' Quitting')
             f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
@@ -60,7 +60,7 @@ if __name__ == '__main__':
             matches = list(db.database.find(tags))
             if len(matches) == 1:
                 if tag in matches[0]:
-                    ip = input('provided FILE exists.  Overwrite? (y/n)')
+                    ip = input('provided FILE exists.  Overwrite? (y/n)') if not args.overwrite else 'y'
                     if ip != 'y':
                         raise Exception('Input Provided != \'y\' Quitting')
                 f = add_file(fs, os.path.join(os.path.abspath('.'), args.FILE), args.FILE)
