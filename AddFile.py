@@ -34,7 +34,7 @@ if __name__ == '__main__':
         (tags, other_files) = analyze_DATABASE_file(database_files)
         tag = args.FILE.replace('.', '_')
         if not args.ignore_incar:
-            i = Incar.from_file('INCAR') #
+            i = Incar.from_file('INCAR')
             for key in i.keys():
                 if key not in args.ignore:
                     tags['incar.{}'.format(key)] = i[key]
