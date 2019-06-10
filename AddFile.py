@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-p', '--parent_dirs', help='Number of Parent Dirs to look for DATABASE files.  Will use all found, favoring closer files. (Default: None)',
                         default=-1, type=int)
-    parser.add_argument('-i', '--ignore', 'INCAR tags to ignore', type=str, nargs='*', default=[])
+    parser.add_argument('-i', '--ignore', help='INCAR tags to ignore', type=str, nargs='*', default=[])
     args = parser.parse_args()
     (db, fs, client) = load_db()
 
