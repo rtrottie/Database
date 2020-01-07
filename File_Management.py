@@ -1,3 +1,5 @@
+from Database_Tools import get_file
+import os
 
 def file_to_dict(acf, labels=None, start=0, end=None):
     """
@@ -26,3 +28,12 @@ def file_to_dict(acf, labels=None, start=0, end=None):
                 ACF[labels[j]].append(data[j])
 
     return ACF
+
+def get_bader(fs, oid):
+    acf_file = get_file(fs, oid)
+    with open(acf_file, 'rb') as f:
+        acf_str = f.read()
+        acf = file_to_dict(acf_str, labels = ['#', 'X','Y','Z','CHARGE','MIN DIST','ATOMIC VOL'])
+    os.remove(acf_file)
+    # print(acf_str.split(b'\n')[0:None])
+    return acf
