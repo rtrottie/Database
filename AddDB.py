@@ -395,7 +395,7 @@ def add_kpoints_convergence(collection, material, directory, other_info, other_f
                                     check_convergence=True)
 
 def add_interpolation(collection, material, directory, incar, kpoints, potcar, other_info={}, other_files=[],
-                  force=False, check_convergence=True, ignore_unconverged=False):
+                  force=False, check_convergence=True, ignore_unconverged=False, delta=0.01):
 
     potcar = Potcar.from_file(potcar)
     incar = Incar.from_file(incar)
@@ -426,7 +426,6 @@ def add_interpolation(collection, material, directory, incar, kpoints, potcar, o
 
 
     # Check for convergence
-    delta = 0.01
     max_e = max(energies)
     max_i = energies.index(max_e)
     convergedP = (max_e - energies[max_i-1] <= delta if max_i > 0 else True) and (max_e - energies[max_i+1] <= delta if max_i < len(energies)-1 else True)
@@ -619,7 +618,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--charged_defect', help='Specifies this is a Charged Defect run both this flag and label must be set',
                         action='store_true')
     parser.add_argument('--interpolation', help='Specifies this is a interpolation run both this flag and label must be set',
-                        action='store_true')
+                        type=float)
     parser.add_argument('--fn', '--force-nupdown', help='Force adding all NUPDOWN',
                         action='store_true')
     parser.add_argument('--mep', '--minimum-energy-pathway', help='add MEP run',
@@ -692,7 +691,8 @@ if __name__ == '__main__':
         raise Exception('pc must be specified twice')
 
     elif args.interpolation and 'interpolation' in tags['labels']:
-        add_interpolation('database', material, os.path.abspath('.'),'INCAR', 'KPOINTS', 'POTCAR', other_info=tags, other_files=other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged)
+        add_interpolation('database', material, os.path.abspath('.'),'INCAR', 'KPOINTS', 'POTCAR', other_info=tags, other_files=other_files, check_convergence=args.cc, ignore_unconverged=args.ignore_unconverged,
+                          delta=args.interpolation)
         sys.exit()
     elif args.interpolation != 'interpolation' in tags['labels']: # one or the other is established
         raise Exception('interpolation must be specified twice')
