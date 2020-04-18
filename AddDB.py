@@ -618,7 +618,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--charged_defect', help='Specifies this is a Charged Defect run both this flag and label must be set',
                         action='store_true')
     parser.add_argument('--interpolation', help='Specifies this is a interpolation run both this flag and label must be set',
-                        type=float)
+                        type=float, default=0.01)
     parser.add_argument('--fn', '--force-nupdown', help='Force adding all NUPDOWN',
                         action='store_true')
     parser.add_argument('--mep', '--minimum-energy-pathway', help='add MEP run',
